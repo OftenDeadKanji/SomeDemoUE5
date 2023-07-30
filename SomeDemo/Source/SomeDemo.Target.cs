@@ -9,7 +9,6 @@ public class SomeDemoTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
-		ExtraModuleNames.Add("SomeDemo");
+		ExtraModuleNames.AddRange( new string[] { "SomeDemo" } );
 	}
 }
