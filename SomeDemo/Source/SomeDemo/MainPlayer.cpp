@@ -4,6 +4,7 @@
 #include "MainPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Inventory.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -13,13 +14,15 @@ AMainPlayer::AMainPlayer()
 
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCamera->SetupAttachment(RootComponent);
+	
+	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
 }
 
 // Called when the game starts or when spawned
 void AMainPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -27,6 +30,7 @@ void AMainPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UE_LOG(LogTemp, Warning, TEXT("Size: %d"), sizeof(UActorComponent));
 }
 
 // Called to bind functionality to input

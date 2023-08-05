@@ -27,6 +27,11 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+	void Turn(float Value);
+	void LookUp(float Value);
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 		class UCameraComponent* FirstPersonCamera;
 
@@ -35,8 +40,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 		float LookUpLimitMax = 89.9f;
 
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-	void Turn(float Value);
-	void LookUp(float Value);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		class UInventory* Inventory;
 };

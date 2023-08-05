@@ -53,6 +53,11 @@ void ADoor::StartClosing()
 	bIsOpening = false;
 }
 
+void ADoor::ChangeState()
+{
+	bIsOpening = !bIsOpening;
+}
+
 bool ADoor::IsOpening() const
 {
 	return bIsOpening;

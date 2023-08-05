@@ -30,6 +30,9 @@ public:
 		void StartClosing();
 
 	UFUNCTION(BlueprintCallable)
+		void ChangeState();
+
+	UFUNCTION(BlueprintCallable)
 		bool IsOpening() const;
 
 protected:
