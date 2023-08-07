@@ -16,6 +16,9 @@ AMainPlayer::AMainPlayer()
 	FirstPersonCamera->SetupAttachment(RootComponent);
 	
 	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
+
+	//EquippedWeapon = CreateDefaultSubobject<UWeapon>(TEXT("Weapon"));
+	//EquippedWeapon->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -81,6 +84,33 @@ void AMainPlayer::LookUp(float Value)
 		cameraRotation.Pitch = FMath::Clamp(cameraRotation.Pitch + Value, LookUpLimitMin, LookUpLimitMax);
 
 		FirstPersonCamera->SetRelativeRotation(cameraRotation);
+	}
+}
+
+void AMainPlayer::Fire()
+{
+	if (bUsesWeapon)
+	{
+		EquippedWeapon->Fire();
+	}
+}
+
+void AMainPlayer::Reload()
+{
+	if (bUsesWeapon)
+	{
+		EquippedWeapon->Reload();
+	}
+}
+
+void AMainPlayer::SetItem1()
+{
+	if (Weapons.Num() > 0)
+	{
+		EquippedWeapon = CreateDefaultSubobject<UWeapon>(TEXT("Weapon"));
+		EquippedWeapon->SetupAttachment(RootComponent);
+		
+		EquippedWeapon->Initialize(Weapons[0]);
 	}
 }
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Weapon.h"
 #include "MainPlayer.generated.h"
 
 UCLASS()
@@ -31,6 +32,11 @@ protected:
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
+	
+	void Fire();
+	void Reload();
+
+	void SetItem1();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 		class UCameraComponent* FirstPersonCamera;
@@ -42,4 +48,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		class UInventory* Inventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		bool bUsesWeapon = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		class UWeapon* EquippedWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		TArray<FWeaponProperties> Weapons;
 };
