@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Inventory.h"
+#include "WeaponProperties.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -17,8 +18,8 @@ AMainPlayer::AMainPlayer()
 	
 	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
 
-	//EquippedWeapon = CreateDefaultSubobject<UWeapon>(TEXT("Weapon"));
-	//EquippedWeapon->SetupAttachment(RootComponent);
+	WeaponLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Location"));
+	WeaponLocation->SetupAttachment(FirstPersonCamera);
 }
 
 // Called when the game starts or when spawned
@@ -32,8 +33,6 @@ void AMainPlayer::BeginPlay()
 void AMainPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	UE_LOG(LogTemp, Warning, TEXT("Size: %d"), sizeof(UActorComponent));
 }
 
 // Called to bind functionality to input
@@ -45,6 +44,10 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MainPlayer_MoveRight", this, &AMainPlayer::MoveRight);
 	PlayerInputComponent->BindAxis("MainPlayer_Turn", this, &AMainPlayer::Turn);
 	PlayerInputComponent->BindAxis("MainPlayer_LookUp", this, &AMainPlayer::LookUp);
+
+	PlayerInputComponent->BindAction("MainPlayer_Fire", IE_Pressed, this, &AMainPlayer::Fire);
+	PlayerInputComponent->BindAction("MainPlayer_Reload", IE_Pressed, this, &AMainPlayer::Reload);
+	PlayerInputComponent->BindAction("MainPlayer_SetItem1", IE_Pressed, this, &AMainPlayer::SetItem1);
 
 }
 
@@ -89,17 +92,17 @@ void AMainPlayer::LookUp(float Value)
 
 void AMainPlayer::Fire()
 {
-	if (bUsesWeapon)
+	if (bUsesWeapon && EquippedWeaponActor)
 	{
-		EquippedWeapon->Fire();
+		//EquippedWeapon->Fire();
 	}
 }
 
 void AMainPlayer::Reload()
 {
-	if (bUsesWeapon)
+	if (bUsesWeapon && EquippedWeaponActor)
 	{
-		EquippedWeapon->Reload();
+		//EquippedWeapon->Reload();
 	}
 }
 
@@ -107,10 +110,35 @@ void AMainPlayer::SetItem1()
 {
 	if (Weapons.Num() > 0)
 	{
-		EquippedWeapon = CreateDefaultSubobject<UWeapon>(TEXT("Weapon"));
-		EquippedWeapon->SetupAttachment(RootComponent);
+		auto* World = GetWorld();
 		
-		EquippedWeapon->Initialize(Weapons[0]);
+		FVector location = WeaponLocation->GetRelativeLocation();
+		FRotator rotation = WeaponLocation->GetRelativeRotation();
+		
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Owner = this;
+		AWeapon* spawned = Cast<AWeapon>(World->SpawnActor(Weapons[0], &location, &rotation, SpawnParams));
+		if (spawned)
+		{
+			EquippedWeaponActor = spawned;
+
+			FAttachmentTransformRules rulez(EAttachmentRule::KeepRelative, true);
+			
+			EquippedWeaponActor->AttachToComponent(FirstPersonCamera, rulez);
+		}
+
+		//EquippedWeapon = NewObject<UWeapon>(this, UWeapon::StaticClass(), TEXT("WeaponComponent"));
+		//EquippedWeapon->RegisterComponent();
+		//
+		//EquippedWeapon->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+		//
+		//FWeaponProperties* weapon = WeaponsDT->FindRow<FWeaponProperties>(WeaponsNames[0], "");
+		//if (weapon)
+		//{
+		//	EquippedWeapon->Initialize(*weapon);
+		//	bUsesWeapon = true;
+		//}
 	}
 }
 

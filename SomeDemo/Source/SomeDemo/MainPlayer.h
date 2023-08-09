@@ -42,19 +42,22 @@ protected:
 		class UCameraComponent* FirstPersonCamera;
 
 	UPROPERTY(EditAnywhere, Category = "Camera")
-		float LookUpLimitMin = -89.9f;
+		float LookUpLimitMin = -89.99f;
 	UPROPERTY(EditAnywhere, Category = "Camera")
-		float LookUpLimitMax = 89.9f;
+		float LookUpLimitMax = 89.99f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		class UInventory* Inventory;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		bool bUsesWeapon = true;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
+		bool bUsesWeapon = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		class UWeapon* EquippedWeapon;
+		TArray<TSubclassOf<class AWeapon>> Weapons;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
+		class AWeapon* EquippedWeaponActor;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		TArray<FWeaponProperties> Weapons;
+		class USceneComponent* WeaponLocation;
 };

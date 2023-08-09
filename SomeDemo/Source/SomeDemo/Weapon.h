@@ -3,86 +3,38 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
+#include "GameFramework/Actor.h"
+#include "WeaponProperties.h"
 #include "Weapon.generated.h"
 
-
-USTRUCT(BlueprintType)
-struct FWeaponProperties
+UCLASS(Blueprintable)
+class SOMEDEMO_API AWeapon : public AActor
 {
 	GENERATED_BODY()
-public:
-	UPROPERTY()
-		float TimeBetweenShots;
-	UPROPERTY()
-		float CurrentShotCooldown;
-	UPROPERTY()
-		bool bIsHitScan = true;
-	UPROPERTY()
-		float BaseDamagePerShot = true;
-	UPROPERTY()
-		int32 ClipAmmo;
-	UPROPERTY()
-		int32 LeftAmmo;
-	UPROPERTY()
-		int32 ClipSize;
-	UPROPERTY()
-		int32 MaxAmmo;
-
-	UPROPERTY()
-		class UStaticMeshComponent* Mesh;
-};
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SOMEDEMO_API UWeapon : public USceneComponent
-{
-	GENERATED_BODY()
-
+	
 public:	
-	// Sets default values for this component's properties
-	UWeapon();
+	// Sets default values for this actor's properties
+	AWeapon();
 
 protected:
-	// Called when the game starts
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable)
+		void InitializeWeapon(FWeaponProperties& Properties);
 
 	UFUNCTION(BlueprintCallable)
 		void Fire();
-	UFUNCTION(BlueprintCallable)
-		void Reload();
-
-	UFUNCTION(BlueprintCallable)
-		void Initialize(FWeaponProperties& Properties);
 protected:
-	//UPROPERTY(EditAnywhere)
-	//	class UStaticMeshComponent* Mesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USceneComponent* Root;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UStaticMeshComponent* Mesh;
+	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		FWeaponProperties WeaponProperties;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-	//	FVector ShotStartLocation;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-	//	float TimeBetweenShots;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-	//	float CurrentShotCooldown;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-	//	bool bIsHitScan = true;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-	//	float BaseDamagePerShot = true;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammunition")
-	//	int32 ClipAmmo;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammunition")
-	//	int32 LeftAmmo;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammunition")
-	//	int32 ClipSize;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammunition")
-	//	int32 MaxAmmo;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	class UStaticMeshComponent* ProjectileMesh;
-	//Animation
-	//Sound
+		bool bIsHitscan;
 };
