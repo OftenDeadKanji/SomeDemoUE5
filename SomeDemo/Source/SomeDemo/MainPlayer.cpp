@@ -5,7 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Inventory.h"
-#include "WeaponProperties.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -20,6 +20,9 @@ AMainPlayer::AMainPlayer()
 
 	WeaponLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Location"));
 	WeaponLocation->SetupAttachment(FirstPersonCamera);
+
+	WeaponShotStartLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Shot Start Location"));
+	WeaponShotStartLocation->SetupAttachment(FirstPersonCamera);
 }
 
 // Called when the game starts or when spawned
@@ -126,19 +129,14 @@ void AMainPlayer::SetItem1()
 			FAttachmentTransformRules rulez(EAttachmentRule::KeepRelative, true);
 			
 			EquippedWeaponActor->AttachToComponent(FirstPersonCamera, rulez);
-		}
+			EquippedWeaponActor->SetOwnerActor(this);
 
-		//EquippedWeapon = NewObject<UWeapon>(this, UWeapon::StaticClass(), TEXT("WeaponComponent"));
-		//EquippedWeapon->RegisterComponent();
-		//
-		//EquippedWeapon->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-		//
-		//FWeaponProperties* weapon = WeaponsDT->FindRow<FWeaponProperties>(WeaponsNames[0], "");
-		//if (weapon)
-		//{
-		//	EquippedWeapon->Initialize(*weapon);
-		//	bUsesWeapon = true;
-		//}
+			FVector ShotRelativeLocation = UKismetMathLibrary::InverseTransformLocation(EquippedWeaponActor->GetTransform(), FirstPersonCamera->GetComponentLocation());
+			EquippedWeaponActor->SetShotStartRelativeLocation(ShotRelativeLocation);
+
+			FVector ShotRelativeDirection = UKismetMathLibrary::InverseTransformDirection(EquippedWeaponActor->GetTransform(), FirstPersonCamera->GetForwardVector());
+			EquippedWeaponActor->SetShotStartRelativeDirection(ShotRelativeDirection);
+		}
 	}
 }
 

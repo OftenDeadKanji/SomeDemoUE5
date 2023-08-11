@@ -55,9 +55,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		TArray<TSubclassOf<class AWeapon>> Weapons;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons")
 		class AWeapon* EquippedWeaponActor;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 		class USceneComponent* WeaponLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+		class USceneComponent* WeaponShotStartLocation;
 };
