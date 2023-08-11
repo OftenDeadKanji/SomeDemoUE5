@@ -2,6 +2,8 @@
 
 
 #include "Weapon.h"
+#include "Sound/SoundBase.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -26,6 +28,7 @@ void AWeapon::BeginPlay()
 void AWeapon::Fire()
 {
 	UE_LOG(LogTemp, Display, TEXT("Fired!"));
+	UGameplayStatics::PlaySound2D(GetWorld(), FireSound, Volume);
 }
 
 // Called every frame

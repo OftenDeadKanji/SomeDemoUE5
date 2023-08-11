@@ -92,15 +92,15 @@ void AMainPlayer::LookUp(float Value)
 
 void AMainPlayer::Fire()
 {
-	if (bUsesWeapon && EquippedWeaponActor)
+	if (EquippedWeaponActor)
 	{
-		//EquippedWeapon->Fire();
+		EquippedWeaponActor->Fire();
 	}
 }
 
 void AMainPlayer::Reload()
 {
-	if (bUsesWeapon && EquippedWeaponActor)
+	if (EquippedWeaponActor)
 	{
 		//EquippedWeapon->Reload();
 	}

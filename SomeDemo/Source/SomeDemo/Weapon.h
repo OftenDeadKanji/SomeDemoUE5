@@ -34,7 +34,11 @@ protected:
 		class USceneComponent* Root;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UStaticMeshComponent* Mesh;
-	//
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		bool bIsHitscan;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Sound")
+		class USoundBase* FireSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Sound")
+		float Volume = 1.0f;
 };
