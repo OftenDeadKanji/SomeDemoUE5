@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Inventory.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -16,6 +17,12 @@ AMainPlayer::AMainPlayer()
 	FirstPersonCamera->SetupAttachment(RootComponent);
 	
 	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
+
+	WeaponLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Location"));
+	WeaponLocation->SetupAttachment(FirstPersonCamera);
+
+	WeaponShotStartLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Shot Start Location"));
+	WeaponShotStartLocation->SetupAttachment(FirstPersonCamera);
 }
 
 // Called when the game starts or when spawned
@@ -29,8 +36,6 @@ void AMainPlayer::BeginPlay()
 void AMainPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	UE_LOG(LogTemp, Warning, TEXT("Size: %d"), sizeof(UActorComponent));
 }
 
 // Called to bind functionality to input
@@ -42,6 +47,10 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MainPlayer_MoveRight", this, &AMainPlayer::MoveRight);
 	PlayerInputComponent->BindAxis("MainPlayer_Turn", this, &AMainPlayer::Turn);
 	PlayerInputComponent->BindAxis("MainPlayer_LookUp", this, &AMainPlayer::LookUp);
+
+	PlayerInputComponent->BindAction("MainPlayer_Fire", IE_Pressed, this, &AMainPlayer::Fire);
+	PlayerInputComponent->BindAction("MainPlayer_Reload", IE_Pressed, this, &AMainPlayer::Reload);
+	PlayerInputComponent->BindAction("MainPlayer_SetItem1", IE_Pressed, this, &AMainPlayer::SetItem1);
 
 }
 
@@ -81,6 +90,53 @@ void AMainPlayer::LookUp(float Value)
 		cameraRotation.Pitch = FMath::Clamp(cameraRotation.Pitch + Value, LookUpLimitMin, LookUpLimitMax);
 
 		FirstPersonCamera->SetRelativeRotation(cameraRotation);
+	}
+}
+
+void AMainPlayer::Fire()
+{
+	if (EquippedWeaponActor)
+	{
+		EquippedWeaponActor->Fire();
+	}
+}
+
+void AMainPlayer::Reload()
+{
+	if (EquippedWeaponActor)
+	{
+		//EquippedWeapon->Reload();
+	}
+}
+
+void AMainPlayer::SetItem1()
+{
+	if (Weapons.Num() > 0)
+	{
+		auto* World = GetWorld();
+		
+		FVector location = WeaponLocation->GetRelativeLocation();
+		FRotator rotation = WeaponLocation->GetRelativeRotation();
+		
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Owner = this;
+		AWeapon* spawned = Cast<AWeapon>(World->SpawnActor(Weapons[0], &location, &rotation, SpawnParams));
+		if (spawned)
+		{
+			EquippedWeaponActor = spawned;
+
+			FAttachmentTransformRules rulez(EAttachmentRule::KeepRelative, true);
+			
+			EquippedWeaponActor->AttachToComponent(FirstPersonCamera, rulez);
+			EquippedWeaponActor->SetOwnerActor(this);
+
+			FVector ShotRelativeLocation = UKismetMathLibrary::InverseTransformLocation(EquippedWeaponActor->GetTransform(), FirstPersonCamera->GetComponentLocation());
+			EquippedWeaponActor->SetShotStartRelativeLocation(ShotRelativeLocation);
+
+			FVector ShotRelativeDirection = UKismetMathLibrary::InverseTransformDirection(EquippedWeaponActor->GetTransform(), FirstPersonCamera->GetForwardVector());
+			EquippedWeaponActor->SetShotStartRelativeDirection(ShotRelativeDirection);
+		}
 	}
 }
 
