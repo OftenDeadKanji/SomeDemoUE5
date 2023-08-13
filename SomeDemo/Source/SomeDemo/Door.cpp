@@ -20,6 +20,29 @@ ADoor::ADoor()
 void ADoor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (bIsOpening)
+	{
+		if (OpenClosedFactor == 1.0f)
+		{
+			OnDoorOpen.Broadcast();
+		}
+		else
+		{
+			OnDoorStartOpening.Broadcast();
+		}
+	}
+	else
+	{
+		if (OpenClosedFactor == 0.0f)
+		{
+			OnDoorClose.Broadcast();
+		}
+		else
+		{
+			OnDoorStartClosing.Broadcast();
+		}
+	}
 }
 
 // Called every frame
@@ -29,17 +52,40 @@ void ADoor::Tick(float DeltaTime)
 
 	if (bEnabled)
 	{
-		OpenClosedFactor += Speed * bIsOpening ? DeltaTime : -DeltaTime;
-		OpenClosedFactor = FMath::Clamp(OpenClosedFactor, 0.0f, 1.0f);
+		bool needToOpen = bIsOpening && OpenClosedFactor != 1.0f;
+		bool needToClose = !bIsOpening && OpenClosedFactor != 0.0f;
 
-		//auto transform = FMath::Lerp(RelativeTransformWhenClosed, RelativeTransformWhenOpen, OpenClosedFactor);
-		FTransform transform(
-			FMath::Lerp(RelativeTransformWhenClosed.GetRotation(), RelativeTransformWhenOpen.GetRotation(), OpenClosedFactor),
-			FMath::Lerp(RelativeTransformWhenClosed.GetLocation(), RelativeTransformWhenOpen.GetLocation(), OpenClosedFactor),
-			FMath::Lerp(RelativeTransformWhenClosed.GetScale3D(), RelativeTransformWhenOpen.GetScale3D(), OpenClosedFactor)
-			);
+		if (needToOpen || needToClose)
+		{
+			if (OpenClosedFactor == 0.0f)
+			{
+				OnDoorStartOpening.Broadcast();
+			}
+			else if (OpenClosedFactor == 1.0f)
+			{
+				OnDoorStartClosing.Broadcast();
+			}
 
-		Mesh->SetRelativeTransform(transform);
+			OpenClosedFactor += Speed * bIsOpening ? DeltaTime : -DeltaTime;
+			OpenClosedFactor = FMath::Clamp(OpenClosedFactor, 0.0f, 1.0f);
+
+			FTransform transform(
+				FMath::Lerp(RelativeTransformWhenClosed.GetRotation(), RelativeTransformWhenOpen.GetRotation(), OpenClosedFactor),
+				FMath::Lerp(RelativeTransformWhenClosed.GetLocation(), RelativeTransformWhenOpen.GetLocation(), OpenClosedFactor),
+				FMath::Lerp(RelativeTransformWhenClosed.GetScale3D(),  RelativeTransformWhenOpen.GetScale3D(),  OpenClosedFactor)
+				);
+
+			Mesh->SetRelativeTransform(transform);
+
+			if (bIsOpening && OpenClosedFactor == 1.0f)
+			{
+				OnDoorOpen.Broadcast();
+			}
+			else if (!bIsOpening && OpenClosedFactor == 0.0f)
+			{
+				OnDoorClose.Broadcast();
+			}
+		}
 	}
 }
 
@@ -61,5 +107,15 @@ void ADoor::ChangeState()
 bool ADoor::IsOpening() const
 {
 	return bIsOpening;
+}
+
+bool ADoor::IsOpen() const
+{
+	return OpenClosedFactor == 1.0f;
+}
+
+bool ADoor::IsClosed() const
+{
+	return OpenClosedFactor == 0.0f;
 }
 

@@ -34,7 +34,19 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		bool IsOpening() const;
+	UFUNCTION(BlueprintCallable)
+		bool IsOpen() const;
+	UFUNCTION(BlueprintCallable)
+		bool IsClosed() const;
 
+	DECLARE_EVENT(ADoor, FDoorOpen)
+		FDoorOpen OnDoorOpen;
+	DECLARE_EVENT(ADoor, FDoorStartOpening)
+		FDoorStartOpening OnDoorStartOpening;
+	DECLARE_EVENT(ADoor, FDoorClose)
+		FDoorClose OnDoorClose;
+	DECLARE_EVENT(ADoor, FDoorStartClosing)
+		FDoorStartClosing OnDoorStartClosing;
 protected:
 	UPROPERTY()
 		class USceneComponent* Root;
