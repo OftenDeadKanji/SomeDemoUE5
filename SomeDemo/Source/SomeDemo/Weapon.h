@@ -47,6 +47,9 @@ protected:
 		FVector RelativeDirection;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		float MaxRange = 10000.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		float BaseDamage = 20.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Sound")
 		class USoundBase* FireSound;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Sound")

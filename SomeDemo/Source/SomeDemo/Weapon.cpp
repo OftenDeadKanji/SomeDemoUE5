@@ -44,7 +44,7 @@ void AWeapon::Fire()
 		auto* hitActor = hit.GetActor();
 		if (IDamageable* damageable = Cast<IDamageable>(hitActor))
 		{
-			damageable->Execute_DoDamage(hitActor, 1);
+			damageable->Execute_DoDamage(hitActor, BaseDamage);
 		}
 	}
 }

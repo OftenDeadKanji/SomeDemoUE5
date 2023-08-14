@@ -2,6 +2,9 @@
 
 
 #include "Enemy.h"
+#include "Components/WidgetComponent.h"
+#include "Blueprint/WidgetTree.h"
+#include "Components/ProgressBar.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -9,6 +12,8 @@ AEnemy::AEnemy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	HealthBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("Health Bar"));
+	HealthBar->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -16,6 +21,7 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	UpdateHealthBar();
 }
 
 // Called every frame
@@ -34,6 +40,23 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::DoDamage_Implementation(float Value)
 {
-	GetWorld()->DestroyActor(this);
+	Health -= Value;
+
+	if (Health <= 0.0f)
+	{
+		GetWorld()->DestroyActor(this);
+		return;
+	}
+
+	UpdateHealthBar();
+}
+
+void AEnemy::UpdateHealthBar()
+{
+	auto* progressBar = Cast<UProgressBar>(HealthBar->GetWidget()->WidgetTree->FindWidget(ProgressBarWidgetName));
+	if (progressBar)
+	{
+		progressBar->SetPercent(Health / MaxHealth);
+	}
 }
 
