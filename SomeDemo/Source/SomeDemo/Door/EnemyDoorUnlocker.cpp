@@ -2,7 +2,7 @@
 
 
 #include "EnemyDoorUnlocker.h"
-#include "Enemy.h"
+#include "../Characters/Enemy.h"
 #include "Door.h"
 
 // Sets default values

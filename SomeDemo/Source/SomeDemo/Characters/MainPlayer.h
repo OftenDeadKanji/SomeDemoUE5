@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Weapon.h"
+#include "../Weapons/Weapon.h"
+#include "../Weapons/WeaponInstance.h"
 #include "MainPlayer.generated.h"
 
 UCLASS()
@@ -27,6 +28,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+		void AddWeapon(FWeaponInstance Weapon);
 protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -45,15 +48,15 @@ protected:
 		float LookUpLimitMin = -89.99f;
 	UPROPERTY(EditAnywhere, Category = "Camera")
 		float LookUpLimitMax = 89.99f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
 		class UInventory* Inventory;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
 		bool bUsesWeapon = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		TArray<TSubclassOf<class AWeapon>> Weapons;
+		TArray<FWeaponInstance> Weapons;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons")
 		class AWeapon* EquippedWeaponActor;

@@ -30,6 +30,8 @@ public:
 	void SetShotStartRelativeDirection(FVector Direction);
 
 	void SetOwnerActor(class AActor* Actor);
+
+	UStaticMesh* GetWeaponMesh();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class USceneComponent* Root;
@@ -42,13 +44,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		bool bIsHitscan;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		FVector ShotStartRelativeLocation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		FVector RelativeDirection;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		float MaxRange = 10000.0f;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		float BaseDamage = 20.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		int32 MaxAmmo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		int32 ClipSize;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		FVector ShotStartRelativeLocation;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		FVector RelativeDirection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Sound")
 		class USoundBase* FireSound;

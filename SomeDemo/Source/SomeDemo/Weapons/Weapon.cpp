@@ -4,7 +4,7 @@
 #include "Weapon.h"
 #include "Sound/SoundBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "Damageable.h"
+#include "../Damageable.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -62,6 +62,11 @@ void AWeapon::SetShotStartRelativeDirection(FVector Direction)
 void AWeapon::SetOwnerActor(AActor* Actor)
 {
 	OwnerActor = Actor;
+}
+
+UStaticMesh* AWeapon::GetWeaponMesh()
+{
+	return Mesh->GetStaticMesh();
 }
 
 // Called every frame

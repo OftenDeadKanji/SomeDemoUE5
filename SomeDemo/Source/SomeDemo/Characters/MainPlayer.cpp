@@ -4,7 +4,7 @@
 #include "MainPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Inventory.h"
+#include "../Inventory/Inventory.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -52,6 +52,11 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("MainPlayer_Reload", IE_Pressed, this, &AMainPlayer::Reload);
 	PlayerInputComponent->BindAction("MainPlayer_SetItem1", IE_Pressed, this, &AMainPlayer::SetItem1);
 
+}
+
+void AMainPlayer::AddWeapon(FWeaponInstance Weapon)
+{
+	Weapons.Add(Weapon);
 }
 
 void AMainPlayer::MoveForward(float Value)
@@ -121,7 +126,7 @@ void AMainPlayer::SetItem1()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParams.Owner = this;
-		AWeapon* spawned = Cast<AWeapon>(World->SpawnActor(Weapons[0], &location, &rotation, SpawnParams));
+		AWeapon* spawned = Cast<AWeapon>(World->SpawnActor(Weapons[0].WeaponClass, &location, &rotation, SpawnParams));
 		if (spawned)
 		{
 			EquippedWeaponActor = spawned;
