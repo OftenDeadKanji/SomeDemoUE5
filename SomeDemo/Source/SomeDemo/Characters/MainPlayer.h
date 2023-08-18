@@ -60,8 +60,22 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons")
 		class AWeapon* EquippedWeaponActor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons")
+		int32 EquippedWeaponInstanceIndex = -1;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 		class USceneComponent* WeaponLocation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 		class USceneComponent* WeaponShotStartLocation;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+		TSubclassOf<class UMainPlayerHUD> PlayerHUDClass;
+	UPROPERTY()
+		class UMainPlayerHUD* PlayerHUD;
+	//UPROPERTY(EditAnywhere, Category = "UI")
+	//	class UWidgetComponent* PlayerHUD;
+	//UPROPERTY(EditAnywhere, Category = "UI")
+	//	FName GunTextBlockWidgetName;
+	//UPROPERTY(EditAnywhere, Category = "UI")
+	//	FName AmmoTextBlockWidgetName;
 };

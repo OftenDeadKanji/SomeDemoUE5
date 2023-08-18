@@ -8,4 +8,5 @@ void ALevel1GameMode::InitGameState()
 	Super::InitGameState();
 
 	DefaultPawnClass = DefaultPawn;
+	//HUDClass = HUD;
 }

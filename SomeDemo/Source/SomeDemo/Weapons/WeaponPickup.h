@@ -39,7 +39,7 @@ protected:
 		float RotationSpeed = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float FloatHeight = 50.0f;
-	float StartingZ;
+	float FloatStartZ;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float FloatSpeed = 1.0f;

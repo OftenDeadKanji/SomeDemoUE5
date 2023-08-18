@@ -6,6 +6,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Inventory/Inventory.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/TextBlock.h"
+#include "Components/WidgetComponent.h"
+#include "Blueprint/WidgetTree.h"
+#include "../MainPlayerHUD.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -23,13 +28,30 @@ AMainPlayer::AMainPlayer()
 
 	WeaponShotStartLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Shot Start Location"));
 	WeaponShotStartLocation->SetupAttachment(FirstPersonCamera);
+
+	PlayerHUD = nullptr;
+	PlayerHUDClass = nullptr;
 }
 
 // Called when the game starts or when spawned
 void AMainPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	auto* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
+	PlayerHUD = CreateWidget<UMainPlayerHUD>(PC, PlayerHUDClass);
+	PlayerHUD->AddToPlayerScreen();
+
+	if (EquippedWeaponActor == nullptr)
+	{
+		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
+		PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
+	}
+	else
+	{
+		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
+		PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
+	}
 }
 
 // Called every frame
@@ -102,7 +124,11 @@ void AMainPlayer::Fire()
 {
 	if (EquippedWeaponActor)
 	{
-		EquippedWeaponActor->Fire();
+		bool fired = EquippedWeaponActor->Fire(Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo);
+		if (fired)
+		{
+			PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
+		}
 	}
 }
 
@@ -110,38 +136,58 @@ void AMainPlayer::Reload()
 {
 	if (EquippedWeaponActor)
 	{
-		//EquippedWeapon->Reload();
+		EquippedWeaponActor->Reload(Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo);
+		PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
 	}
 }
 
 void AMainPlayer::SetItem1()
 {
-	if (Weapons.Num() > 0)
+	if(EquippedWeaponActor == nullptr)
 	{
-		auto* World = GetWorld();
-		
-		FVector location = WeaponLocation->GetRelativeLocation();
-		FRotator rotation = WeaponLocation->GetRelativeRotation();
-		
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Owner = this;
-		AWeapon* spawned = Cast<AWeapon>(World->SpawnActor(Weapons[0].WeaponClass, &location, &rotation, SpawnParams));
-		if (spawned)
+		if (Weapons.Num() > 0)
 		{
-			EquippedWeaponActor = spawned;
+			auto* World = GetWorld();
 
-			FAttachmentTransformRules rulez(EAttachmentRule::KeepRelative, true);
-			
-			EquippedWeaponActor->AttachToComponent(FirstPersonCamera, rulez);
-			EquippedWeaponActor->SetOwnerActor(this);
+			FVector location = WeaponLocation->GetRelativeLocation();
+			FRotator rotation = WeaponLocation->GetRelativeRotation();
 
-			FVector ShotRelativeLocation = UKismetMathLibrary::InverseTransformLocation(EquippedWeaponActor->GetTransform(), FirstPersonCamera->GetComponentLocation());
-			EquippedWeaponActor->SetShotStartRelativeLocation(ShotRelativeLocation);
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			SpawnParams.Owner = this;
+			AWeapon* spawned = Cast<AWeapon>(World->SpawnActor(Weapons[0].WeaponClass, &location, &rotation, SpawnParams));
+			if (spawned)
+			{
+				EquippedWeaponActor = spawned;
 
-			FVector ShotRelativeDirection = UKismetMathLibrary::InverseTransformDirection(EquippedWeaponActor->GetTransform(), FirstPersonCamera->GetForwardVector());
-			EquippedWeaponActor->SetShotStartRelativeDirection(ShotRelativeDirection);
+				FAttachmentTransformRules rulez(EAttachmentRule::KeepRelative, true);
+
+				EquippedWeaponActor->AttachToComponent(FirstPersonCamera, rulez);
+				EquippedWeaponActor->SetOwnerActor(this);
+
+				FVector ShotRelativeLocation = UKismetMathLibrary::InverseTransformLocation(EquippedWeaponActor->GetTransform(), FirstPersonCamera->GetComponentLocation());
+				EquippedWeaponActor->SetShotStartRelativeLocation(ShotRelativeLocation);
+
+				FVector ShotRelativeDirection = UKismetMathLibrary::InverseTransformDirection(EquippedWeaponActor->GetTransform(), FirstPersonCamera->GetForwardVector());
+				EquippedWeaponActor->SetShotStartRelativeDirection(ShotRelativeDirection);
+			}
+
+			EquippedWeaponInstanceIndex = 0;
+
+			PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
+			PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
 		}
 	}
+	else
+	{
+		GetWorld()->DestroyActor(EquippedWeaponActor);
+		EquippedWeaponActor = nullptr;
+
+		EquippedWeaponInstanceIndex = -1;
+
+		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
+		PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
+	}
+
 }
 

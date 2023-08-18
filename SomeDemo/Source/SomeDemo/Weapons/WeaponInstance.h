@@ -12,7 +12,7 @@ struct FWeaponInstance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AWeapon> WeaponClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 CurrentAmmo;
+		int32 CurrentRemainingAmmo; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 CurrentClipAmmo;
 };

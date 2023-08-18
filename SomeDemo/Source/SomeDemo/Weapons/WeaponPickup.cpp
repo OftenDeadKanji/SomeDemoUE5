@@ -36,7 +36,7 @@ void AWeaponPickup::BeginPlay()
 		}
 	}
 
-	StartingZ = GetActorLocation().Z;
+	FloatStartZ = GetActorLocation().Z;
 }
 
 // Called every frame
@@ -47,7 +47,7 @@ void AWeaponPickup::Tick(float DeltaTime)
 	float heightDelta = FMath::Sin(GetGameTimeSinceCreation() * FloatSpeed) * FloatHeight;
 	
 	FVector location = GetActorLocation();
-	location.Z = StartingZ + heightDelta;
+	location.Z = FloatStartZ + heightDelta;
 	SetActorLocation(location);
 
 	FRotator rotation = GetActorRotation();

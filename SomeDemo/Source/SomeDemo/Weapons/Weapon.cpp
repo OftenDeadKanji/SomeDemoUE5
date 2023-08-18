@@ -27,26 +27,41 @@ void AWeapon::BeginPlay()
 	
 }
 
-void AWeapon::Fire()
+bool AWeapon::Fire(int32& ClipAmmo, int32& Ammo)
 {
-	UE_LOG(LogTemp, Display, TEXT("Fired!"));
-	UGameplayStatics::PlaySound2D(GetWorld(), FireSound, Volume);
-
-	FHitResult hit;
-	
-	FVector StartLocation = UKismetMathLibrary::TransformLocation(GetTransform(), ShotStartRelativeLocation);
-	FVector Direction = UKismetMathLibrary::TransformDirection(GetTransform(), RelativeDirection);
-
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(OwnerActor);
-	if (GetWorld()->LineTraceSingleByChannel(hit, StartLocation, StartLocation + Direction * MaxRange, ECollisionChannel::ECC_Camera, CollisionParams))
+	if (ClipAmmo > 0)
 	{
-		auto* hitActor = hit.GetActor();
-		if (IDamageable* damageable = Cast<IDamageable>(hitActor))
+		UGameplayStatics::PlaySound2D(GetWorld(), FireSound, Volume);
+		ClipAmmo -= 1;
+
+		FHitResult hit;
+		FVector StartLocation = UKismetMathLibrary::TransformLocation(GetTransform(), ShotStartRelativeLocation);
+		FVector Direction = UKismetMathLibrary::TransformDirection(GetTransform(), RelativeDirection);
+
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(OwnerActor);
+		if (GetWorld()->LineTraceSingleByChannel(hit, StartLocation, StartLocation + Direction * MaxRange, ECollisionChannel::ECC_Camera, CollisionParams))
 		{
-			damageable->Execute_DoDamage(hitActor, BaseDamage);
+			auto* hitActor = hit.GetActor();
+			if (IDamageable* damageable = Cast<IDamageable>(hitActor))
+			{
+				damageable->Execute_DoDamage(hitActor, BaseDamage);
+			}
 		}
+
+		return true;
 	}
+
+	return false;
+}
+
+void AWeapon::Reload(int32& ClipAmmo, int32& Ammo)
+{
+	int32 AmmoToAddToClip = ClipSize - ClipAmmo;
+	AmmoToAddToClip = FMath::Min(AmmoToAddToClip, Ammo);
+
+	ClipAmmo += AmmoToAddToClip;
+	Ammo -= AmmoToAddToClip;
 }
 
 void AWeapon::SetShotStartRelativeLocation(FVector RelativeLocation)
@@ -62,6 +77,11 @@ void AWeapon::SetShotStartRelativeDirection(FVector Direction)
 void AWeapon::SetOwnerActor(AActor* Actor)
 {
 	OwnerActor = Actor;
+}
+
+const FString& AWeapon::GetWeaponName() const
+{
+	return Name;
 }
 
 UStaticMesh* AWeapon::GetWeaponMesh()
