@@ -13,10 +13,10 @@ UCLASS(Abstract)
 class SOMEDEMO_API UMainPlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
-		class UTextBlock* PlayerWeaponName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
-		class UTextBlock* PlayerAmmo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UTextBlock* PlayerWeaponName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UTextBlock* PlayerAmmo;
 };

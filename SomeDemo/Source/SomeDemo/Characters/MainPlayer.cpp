@@ -11,6 +11,8 @@
 #include "Blueprint/WidgetTree.h"
 #include "../MainPlayerHUD.h"
 #include "Kismet/GameplayStatics.h"
+#include "../GamePauseUI.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -31,6 +33,9 @@ AMainPlayer::AMainPlayer()
 
 	PlayerHUD = nullptr;
 	PlayerHUDClass = nullptr;
+
+	GamePauseUI = nullptr;
+	GamePauseUIClass = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -52,6 +57,8 @@ void AMainPlayer::BeginPlay()
 		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
 		PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
 	}
+
+	GamePauseUI = CreateWidget<UGamePauseUI>(PC, GamePauseUIClass, FName(TEXT("GamePauseUI")));
 }
 
 // Called every frame
@@ -74,6 +81,7 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("MainPlayer_Reload", IE_Pressed, this, &AMainPlayer::Reload);
 	PlayerInputComponent->BindAction("MainPlayer_SetItem1", IE_Pressed, this, &AMainPlayer::SetItem1);
 
+	auto& binding = PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &AMainPlayer::ToggleGamePause);
 }
 
 void AMainPlayer::AddWeapon(FWeaponInstance Weapon)
@@ -170,12 +178,12 @@ void AMainPlayer::SetItem1()
 
 				FVector ShotRelativeDirection = UKismetMathLibrary::InverseTransformDirection(EquippedWeaponActor->GetTransform(), FirstPersonCamera->GetForwardVector());
 				EquippedWeaponActor->SetShotStartRelativeDirection(ShotRelativeDirection);
+
+				EquippedWeaponInstanceIndex = 0;
+
+				PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
+				PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
 			}
-
-			EquippedWeaponInstanceIndex = 0;
-
-			PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
-			PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
 		}
 	}
 	else
@@ -189,5 +197,32 @@ void AMainPlayer::SetItem1()
 		PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
 	}
 
+}
+
+void AMainPlayer::ToggleGamePause()
+{
+	auto* World = GetWorld();
+	auto* PC = UGameplayStatics::GetPlayerController(World, 0);
+
+	if(bIsGamePauseScreenOn)
+	{
+		GamePauseUI->RemoveFromViewport();
+		bIsGamePauseScreenOn = false;
+
+		UGameplayStatics::SetGamePaused(World, false);
+		PC->bShowMouseCursor = false;
+
+		UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
+	}
+	else
+	{
+		GamePauseUI->AddToViewport();
+		bIsGamePauseScreenOn = true;
+
+		UGameplayStatics::SetGamePaused(World, true);
+		PC->bShowMouseCursor = true;
+
+		UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(PC);
+	}
 }
 
