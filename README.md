@@ -8,3 +8,5 @@ So far I added:
 - basic enemies (patrolling only)
 - lights that shows door state (green - open, red - closed, orange - opening/closing)
 - health bar above enemies
+- simple UI for current weapon (ammo)
+- pause menu (on ESC or P)
