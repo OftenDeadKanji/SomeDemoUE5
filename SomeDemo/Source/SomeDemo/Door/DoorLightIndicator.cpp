@@ -14,9 +14,7 @@ ADoorLightIndicator::ADoorLightIndicator()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
 
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
-	MeshComponent->SetStaticMesh(Mesh);
-	MeshComponent->SetMaterial(0, Material);
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	MeshComponent->SetupAttachment(Root);
 
 	PointLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("Point Light"));
@@ -60,8 +58,9 @@ void ADoorLightIndicator::Tick(float DeltaTime)
 	if (bIsFlickering)
 	{
 		float t = (FMath::Sin(GetGameTimeSinceCreation() * FlickeringSpeed) + 1.0f) * 0.5f;
+		FLinearColor color = ColorWhenDoorIsChangingState * t;
 
-		PointLight->SetLightColor(ColorWhenDoorIsChangingState * t);
+		PointLight->SetLightColor(color);
 	}
 }
 

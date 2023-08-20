@@ -23,13 +23,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	//returns true if fired successfully (had any ammo), false otherwise
 	UFUNCTION(BlueprintCallable)
-		void Fire();
+		bool Fire(int32& ClipAmmo, int32& Ammo);
+	UFUNCTION(BlueprintCallable)
+		void Reload(int32& ClipAmmo, int32& Ammo);
 
 	void SetShotStartRelativeLocation(FVector Location);
 	void SetShotStartRelativeDirection(FVector Direction);
 
 	void SetOwnerActor(class AActor* Actor);
+
+	const FString& GetWeaponName() const;
+
+	UStaticMesh* GetWeaponMesh();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class USceneComponent* Root;
@@ -38,15 +45,27 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class AActor* OwnerActor;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		FString Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		bool bIsHitscan;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		FVector ShotStartRelativeLocation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		FVector RelativeDirection;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 		float MaxRange = 10000.0f;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		float BaseDamage = 20.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		int32 MaxAmmo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		int32 ClipSize;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		FVector ShotStartRelativeLocation;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+		FVector RelativeDirection;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Sound")
 		class USoundBase* FireSound;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Sound")

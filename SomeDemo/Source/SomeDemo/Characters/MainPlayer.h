@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Weapon.h"
+#include "../Weapons/Weapon.h"
+#include "../Weapons/WeaponInstance.h"
 #include "MainPlayer.generated.h"
 
 UCLASS()
@@ -20,45 +21,66 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	void AddWeapon(FWeaponInstance Weapon);
+	
+	void ToggleGamePause();
+
 protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
-	
+
 	void Fire();
 	void Reload();
 
 	void SetItem1();
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
-		class UCameraComponent* FirstPersonCamera;
+	class UCameraComponent* FirstPersonCamera;
 
 	UPROPERTY(EditAnywhere, Category = "Camera")
-		float LookUpLimitMin = -89.99f;
+	float LookUpLimitMin = -89.99f;
 	UPROPERTY(EditAnywhere, Category = "Camera")
-		float LookUpLimitMax = 89.99f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		class UInventory* Inventory;
+	float LookUpLimitMax = 89.99f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
-		bool bUsesWeapon = false;
+	class UInventory* Inventory;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
+	bool bUsesWeapon = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-		TArray<TSubclassOf<class AWeapon>> Weapons;
+	TArray<FWeaponInstance> Weapons;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons")
-		class AWeapon* EquippedWeaponActor;
+	class AWeapon* EquippedWeaponActor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons")
+	int32 EquippedWeaponInstanceIndex = -1;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-		class USceneComponent* WeaponLocation;
+	class USceneComponent* WeaponLocation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-		class USceneComponent* WeaponShotStartLocation;
+	class USceneComponent* WeaponShotStartLocation;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UMainPlayerHUD> PlayerHUDClass;
+	UPROPERTY()
+	class UMainPlayerHUD* PlayerHUD;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UGamePauseUI> GamePauseUIClass;
+	UPROPERTY()
+	class UGamePauseUI* GamePauseUI;
+
+	bool bIsGamePauseScreenOn = false;
 };

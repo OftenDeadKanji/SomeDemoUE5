@@ -28,12 +28,6 @@ protected:
 		class USceneComponent* Root;
 
 	UPROPERTY(EditAnywhere)
-		class UStaticMesh* Mesh;
-
-	UPROPERTY(EditAnywhere)
-		class UMaterialInstanceDynamic* Material;
-
-	UPROPERTY()
 		class UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(EditAnywhere, Category = Light)

@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "MainPlayer.h"
+#include "Characters/MainPlayer.h"
+#include "Level1_HUD.h"
 #include "Level1GameMode.generated.h"
 
 /**
@@ -19,5 +20,8 @@ public:
 	virtual void InitGameState() override;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AMainPlayer> DefaultPawn = AMainPlayer::StaticClass();
+		TSubclassOf<AMainPlayer> DefaultPawn = AMainPlayer::StaticClass();
+
+	//UPROPERTY(EditAnywhere)
+	//	TSubclassOf<ALevel1_HUD> HUD = ALevel1_HUD::StaticClass();
 };

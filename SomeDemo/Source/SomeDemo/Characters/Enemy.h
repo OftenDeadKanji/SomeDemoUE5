@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Damageable.h"
+#include "../Damageable.h"
 #include "Enemy.generated.h"
 
 UCLASS()
@@ -28,4 +28,18 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void DoDamage_Implementation(float Value) override;
+
+	UFUNCTION(BlueprintCallable)
+		void UpdateHealthBar();
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Health = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxHealth = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+		class UWidgetComponent* HealthBar;
+	UPROPERTY(EditAnywhere, Category = "UI")
+		FName ProgressBarWidgetName;
+
 };
