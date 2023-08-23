@@ -33,6 +33,8 @@ public:
 	
 	void ToggleGamePause();
 
+	UFUNCTION(BlueprintCallable)
+	bool ShowMessage(FString Message);
 protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -45,6 +47,8 @@ protected:
 	void SetItem1();
 
 	void UpdateWeaponInfoUI();
+
+	void UpdateMessage(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* FirstPersonCamera;
@@ -85,4 +89,16 @@ protected:
 	class UGamePauseUI* GamePauseUI;
 
 	bool bIsGamePauseScreenOn = false;
+
+//public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	float MessageMaxTime = 5.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	float MessageCurrentTime = 0.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	float MessageAppearTime = 1.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	float MessageDisappearTime = 1.0f;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	//FString Message;
 };

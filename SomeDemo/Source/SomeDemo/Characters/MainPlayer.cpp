@@ -48,6 +48,8 @@ void AMainPlayer::BeginPlay()
 	PlayerHUD->AddToPlayerScreen();
 
 	UpdateWeaponInfoUI();
+	PlayerHUD->Message->SetRenderOpacity(0.0f);
+	MessageCurrentTime = MessageMaxTime;
 
 	GamePauseUI = CreateWidget<UGamePauseUI>(PC, GamePauseUIClass, FName(TEXT("GamePauseUI")));
 }
@@ -56,6 +58,7 @@ void AMainPlayer::BeginPlay()
 void AMainPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateMessage(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -233,6 +236,26 @@ void AMainPlayer::UpdateWeaponInfoUI()
 	}
 }
 
+void AMainPlayer::UpdateMessage(float DelatTime)
+{
+	if (MessageCurrentTime < MessageMaxTime)
+	{
+		float Opacity = 1.0f;
+		if (MessageCurrentTime < MessageAppearTime)
+		{
+			Opacity = FMath::Lerp(0.0f, 1.0f, MessageCurrentTime / MessageAppearTime);
+		}
+		else if (MessageCurrentTime > MessageMaxTime - MessageDisappearTime)
+		{
+			Opacity = FMath::Lerp(1.0f, 0.0f, (MessageCurrentTime - (MessageMaxTime - MessageDisappearTime)) / MessageDisappearTime);
+		}
+		
+		PlayerHUD->Message->SetRenderOpacity(Opacity);
+
+		MessageCurrentTime += DelatTime;
+	}
+}
+
 void AMainPlayer::ToggleGamePause()
 {
 	auto* World = GetWorld();
@@ -258,5 +281,18 @@ void AMainPlayer::ToggleGamePause()
 
 		UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(PC);
 	}
+}
+
+bool AMainPlayer::ShowMessage(FString Message)
+{
+	if (MessageCurrentTime >= MessageMaxTime)
+	{
+		this->PlayerHUD->Message->SetText(FText::FromString(Message));
+		MessageCurrentTime = 0.0f;
+
+		return true;
+	}
+
+	return false;
 }
 

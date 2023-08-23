@@ -19,4 +19,7 @@ public:
 	class UTextBlock* PlayerWeaponName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UTextBlock* PlayerAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UTextBlock* Message;
 };
