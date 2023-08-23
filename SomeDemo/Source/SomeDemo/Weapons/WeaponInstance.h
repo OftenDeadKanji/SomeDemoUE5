@@ -9,6 +9,8 @@ struct FWeaponInstance
 {
 	GENERATED_BODY();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsAvailable = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<AWeapon> WeaponClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

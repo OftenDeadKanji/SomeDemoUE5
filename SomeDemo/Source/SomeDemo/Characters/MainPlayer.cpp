@@ -47,16 +47,7 @@ void AMainPlayer::BeginPlay()
 	PlayerHUD = CreateWidget<UMainPlayerHUD>(PC, PlayerHUDClass);
 	PlayerHUD->AddToPlayerScreen();
 
-	if (EquippedWeaponActor == nullptr)
-	{
-		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
-		PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
-	}
-	else
-	{
-		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
-		PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
-	}
+	UpdateWeaponInfoUI();
 
 	GamePauseUI = CreateWidget<UGamePauseUI>(PC, GamePauseUIClass, FName(TEXT("GamePauseUI")));
 }
@@ -86,7 +77,30 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void AMainPlayer::AddWeapon(FWeaponInstance Weapon)
 {
-	Weapons.Add(Weapon);
+	if (Weapon.WeaponClass != Weapon1.WeaponClass && Weapon.WeaponClass != Weapon2.WeaponClass && Weapon.WeaponClass != Weapon3.WeaponClass)
+	{
+		return;
+	}
+
+	FWeaponInstance& Instance = Weapon.WeaponClass == Weapon1.WeaponClass ? Weapon1 : Weapon.WeaponClass == Weapon2.WeaponClass ? Weapon2 : Weapon3;
+
+	if (Instance.bIsAvailable)
+	{
+		Instance.CurrentRemainingAmmo += Weapon.CurrentRemainingAmmo + Weapon.CurrentClipAmmo;
+
+		if (auto* DefaultWeapon = Cast<AWeapon>(Instance.WeaponClass->GetDefaultObject()))
+		{
+			Instance.CurrentRemainingAmmo = FMath::Min(Instance.CurrentRemainingAmmo, DefaultWeapon->MaxAmmo);
+		}
+	}
+	else
+	{
+		Instance.bIsAvailable = true;
+		Instance.CurrentClipAmmo = Weapon.CurrentClipAmmo;
+		Instance.CurrentRemainingAmmo = Weapon.CurrentRemainingAmmo;
+	}
+
+	UpdateWeaponInfoUI();
 }
 
 void AMainPlayer::MoveForward(float Value)
@@ -132,10 +146,12 @@ void AMainPlayer::Fire()
 {
 	if (EquippedWeaponActor)
 	{
-		bool fired = EquippedWeaponActor->Fire(Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo);
+		FWeaponInstance& Instance = EquippedWeaponInstanceIndex == 0 ? Weapon1 : EquippedWeaponInstanceIndex == 1 ? Weapon2 : Weapon3;
+
+		bool fired = EquippedWeaponActor->Fire(Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
 		if (fired)
 		{
-			PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
+			PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
 		}
 	}
 }
@@ -144,8 +160,10 @@ void AMainPlayer::Reload()
 {
 	if (EquippedWeaponActor)
 	{
-		EquippedWeaponActor->Reload(Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo);
-		PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
+		FWeaponInstance& Instance = EquippedWeaponInstanceIndex == 0 ? Weapon1 : EquippedWeaponInstanceIndex == 1 ? Weapon2 : Weapon3;
+
+		EquippedWeaponActor->Reload(Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
+		PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
 	}
 }
 
@@ -153,7 +171,7 @@ void AMainPlayer::SetItem1()
 {
 	if(EquippedWeaponActor == nullptr)
 	{
-		if (Weapons.Num() > 0)
+		if (Weapon1.bIsAvailable)
 		{
 			auto* World = GetWorld();
 
@@ -163,7 +181,7 @@ void AMainPlayer::SetItem1()
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			SpawnParams.Owner = this;
-			AWeapon* spawned = Cast<AWeapon>(World->SpawnActor(Weapons[0].WeaponClass, &location, &rotation, SpawnParams));
+			AWeapon* spawned = Cast<AWeapon>(World->SpawnActor(Weapon1.WeaponClass, &location, &rotation, SpawnParams));
 			if (spawned)
 			{
 				EquippedWeaponActor = spawned;
@@ -182,7 +200,7 @@ void AMainPlayer::SetItem1()
 				EquippedWeaponInstanceIndex = 0;
 
 				PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
-				PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapons[EquippedWeaponInstanceIndex].CurrentClipAmmo, Weapons[EquippedWeaponInstanceIndex].CurrentRemainingAmmo)));
+				PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapon1.CurrentClipAmmo, Weapon1.CurrentRemainingAmmo)));
 			}
 		}
 	}
@@ -197,6 +215,22 @@ void AMainPlayer::SetItem1()
 		PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
 	}
 
+}
+
+void AMainPlayer::UpdateWeaponInfoUI()
+{
+	if (EquippedWeaponActor == nullptr)
+	{
+		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
+		PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
+	}
+	else
+	{
+		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
+
+		FWeaponInstance& Instance = EquippedWeaponInstanceIndex == 0 ? Weapon1 : EquippedWeaponInstanceIndex == 1 ? Weapon2 : Weapon3;
+		PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
+	}
 }
 
 void AMainPlayer::ToggleGamePause()

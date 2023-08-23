@@ -44,6 +44,7 @@ protected:
 
 	void SetItem1();
 
+	void UpdateWeaponInfoUI();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* FirstPersonCamera;
@@ -56,11 +57,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
 	class UInventory* Inventory;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
-	bool bUsesWeapon = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-	TArray<FWeaponInstance> Weapons;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	FWeaponInstance Weapon1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	FWeaponInstance Weapon2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	FWeaponInstance Weapon3;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons")
 	class AWeapon* EquippedWeaponActor;
