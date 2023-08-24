@@ -283,11 +283,11 @@ void AMainPlayer::ToggleGamePause()
 	}
 }
 
-bool AMainPlayer::ShowMessage(FString Message)
+bool AMainPlayer::ShowMessage(FText Message)
 {
 	if (MessageCurrentTime >= MessageMaxTime)
 	{
-		this->PlayerHUD->Message->SetText(FText::FromString(Message));
+		this->PlayerHUD->Message->SetText(Message);
 		MessageCurrentTime = 0.0f;
 
 		return true;

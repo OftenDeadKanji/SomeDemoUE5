@@ -34,7 +34,8 @@ public:
 	void ToggleGamePause();
 
 	UFUNCTION(BlueprintCallable)
-	bool ShowMessage(FString Message);
+	bool ShowMessage(FText Message);
+
 	UFUNCTION(BlueprintCallable)
 	void MoveForward(float Value);
 	UFUNCTION(BlueprintCallable)
