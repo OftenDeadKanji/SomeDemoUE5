@@ -3,10 +3,15 @@
 
 #include "Level1GameMode.h"
 
-void ALevel1GameMode::InitGameState() 
-{
-	Super::InitGameState();
+//void ALevel1GameMode::InitGameState() 
+//{
+//	Super::InitGameState();
+//
+//	DefaultPawnClass = DefaultPawn;
+//	//HUDClass = HUD;
+//}
 
+ALevel1GameMode::ALevel1GameMode()
+{
 	DefaultPawnClass = DefaultPawn;
-	//HUDClass = HUD;
 }

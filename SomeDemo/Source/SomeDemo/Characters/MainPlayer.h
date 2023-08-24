@@ -35,17 +35,24 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool ShowMessage(FString Message);
-protected:
+	UFUNCTION(BlueprintCallable)
 	void MoveForward(float Value);
+	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Value);
+	UFUNCTION(BlueprintCallable)
 	void Turn(float Value);
+	UFUNCTION(BlueprintCallable)
 	void LookUp(float Value);
 
+	UFUNCTION(BlueprintCallable)
 	void Fire();
+	UFUNCTION(BlueprintCallable)
 	void Reload();
 
+	UFUNCTION(BlueprintCallable)
 	void SetItem1();
 
+protected:
 	void UpdateWeaponInfoUI();
 
 	void UpdateMessage(float DeltaTime);

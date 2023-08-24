@@ -66,16 +66,16 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MainPlayer_MoveForward", this, &AMainPlayer::MoveForward);
-	PlayerInputComponent->BindAxis("MainPlayer_MoveRight", this, &AMainPlayer::MoveRight);
-	PlayerInputComponent->BindAxis("MainPlayer_Turn", this, &AMainPlayer::Turn);
-	PlayerInputComponent->BindAxis("MainPlayer_LookUp", this, &AMainPlayer::LookUp);
-
-	PlayerInputComponent->BindAction("MainPlayer_Fire", IE_Pressed, this, &AMainPlayer::Fire);
-	PlayerInputComponent->BindAction("MainPlayer_Reload", IE_Pressed, this, &AMainPlayer::Reload);
-	PlayerInputComponent->BindAction("MainPlayer_SetItem1", IE_Pressed, this, &AMainPlayer::SetItem1);
-
-	auto& binding = PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &AMainPlayer::ToggleGamePause);
+	//PlayerInputComponent->BindAxis("MainPlayer_MoveForward", this, &AMainPlayer::MoveForward);
+	//PlayerInputComponent->BindAxis("MainPlayer_MoveRight", this, &AMainPlayer::MoveRight);
+	//PlayerInputComponent->BindAxis("MainPlayer_Turn", this, &AMainPlayer::Turn);
+	//PlayerInputComponent->BindAxis("MainPlayer_LookUp", this, &AMainPlayer::LookUp);
+	//
+	//PlayerInputComponent->BindAction("MainPlayer_Fire", IE_Pressed, this, &AMainPlayer::Fire);
+	//PlayerInputComponent->BindAction("MainPlayer_Reload", IE_Pressed, this, &AMainPlayer::Reload);
+	//PlayerInputComponent->BindAction("MainPlayer_SetItem1", IE_Pressed, this, &AMainPlayer::SetItem1);
+	//
+	//auto& binding = PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &AMainPlayer::ToggleGamePause);
 }
 
 void AMainPlayer::AddWeapon(FWeaponInstance Weapon)
