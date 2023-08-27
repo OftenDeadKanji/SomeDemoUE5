@@ -13,6 +13,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "../GamePauseUI.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "../InteractionComponent.h"
+#include "../InteractionInfoUI.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -36,6 +38,9 @@ AMainPlayer::AMainPlayer()
 
 	GamePauseUI = nullptr;
 	GamePauseUIClass = nullptr;
+
+	InteractionInfoUI = nullptr;
+	InteractionInfoUIClass = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -52,30 +57,22 @@ void AMainPlayer::BeginPlay()
 	MessageCurrentTime = MessageMaxTime;
 
 	GamePauseUI = CreateWidget<UGamePauseUI>(PC, GamePauseUIClass, FName(TEXT("GamePauseUI")));
+
+	InteractionInfoUI = CreateWidget<UInteractionInfoUI>(PC, InteractionInfoUIClass, FName(TEXT("InteractionInfoUI")));
+	InteractionInfoUI->AddToPlayerScreen();
+
+	InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Hidden);
+	InteractionInfoUI->PlayerInteractionInfo->SetVisibility(ESlateVisibility::Hidden);
 }
 
 // Called every frame
 void AMainPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdateLineTracedActor();
+
 	UpdateMessage(DeltaTime);
-}
-
-// Called to bind functionality to input
-void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	//PlayerInputComponent->BindAxis("MainPlayer_MoveForward", this, &AMainPlayer::MoveForward);
-	//PlayerInputComponent->BindAxis("MainPlayer_MoveRight", this, &AMainPlayer::MoveRight);
-	//PlayerInputComponent->BindAxis("MainPlayer_Turn", this, &AMainPlayer::Turn);
-	//PlayerInputComponent->BindAxis("MainPlayer_LookUp", this, &AMainPlayer::LookUp);
-	//
-	//PlayerInputComponent->BindAction("MainPlayer_Fire", IE_Pressed, this, &AMainPlayer::Fire);
-	//PlayerInputComponent->BindAction("MainPlayer_Reload", IE_Pressed, this, &AMainPlayer::Reload);
-	//PlayerInputComponent->BindAction("MainPlayer_SetItem1", IE_Pressed, this, &AMainPlayer::SetItem1);
-	//
-	//auto& binding = PlayerInputComponent->BindAction("PauseGame", IE_Pressed, this, &AMainPlayer::ToggleGamePause);
 }
 
 void AMainPlayer::AddWeapon(FWeaponInstance Weapon)
@@ -236,6 +233,46 @@ void AMainPlayer::UpdateWeaponInfoUI()
 	}
 }
 
+void AMainPlayer::UpdateLineTracedActor()
+{
+	auto* World = GetWorld();
+	
+	FHitResult Hit;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FVector Start = FirstPersonCamera->GetComponentLocation();
+	FVector End = Start + FirstPersonCamera->GetForwardVector() * 1000.0f;
+
+	if (World->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_Camera, CollisionParams))
+	{
+		LineTracedActor = Hit.GetActor();
+
+		auto* InteractionComp = LineTracedActor->GetComponentByClass(UInteractionComponent::StaticClass());
+		LineTracedInteractionComponent = Cast<UInteractionComponent>(InteractionComp);
+
+		bool ShowInteractionInfo = false;
+
+		if (LineTracedInteractionComponent)
+		{
+			ShowInteractionInfo = LineTracedInteractionComponent->IsInInteractionRange(GetActorLocation());
+		}
+
+		if(ShowInteractionInfo)
+		{
+			InteractionInfoUI->InteractiveObjectInfo->SetText(LineTracedInteractionComponent->ObjectDescriptionToDisplay);
+			
+			InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Visible);
+			InteractionInfoUI->PlayerInteractionInfo->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Hidden);
+			InteractionInfoUI->PlayerInteractionInfo->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+}
+
 void AMainPlayer::UpdateMessage(float DelatTime)
 {
 	if (MessageCurrentTime < MessageMaxTime)
@@ -253,6 +290,14 @@ void AMainPlayer::UpdateMessage(float DelatTime)
 		PlayerHUD->Message->SetRenderOpacity(Opacity);
 
 		MessageCurrentTime += DelatTime;
+	}
+}
+
+void AMainPlayer::Interact()
+{
+	if (LineTracedInteractionComponent)
+	{
+		LineTracedInteractionComponent->Interact(this, false);
 	}
 }
 

@@ -14,24 +14,17 @@ class SOMEDEMO_API AMainPlayer : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AMainPlayer();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
 	void AddWeapon(FWeaponInstance Weapon);
 	
-	void ToggleGamePause();
 
 	UFUNCTION(BlueprintCallable)
 	bool ShowMessage(FText Message);
@@ -49,13 +42,17 @@ public:
 	void Fire();
 	UFUNCTION(BlueprintCallable)
 	void Reload();
-
 	UFUNCTION(BlueprintCallable)
 	void SetItem1();
 
+	UFUNCTION(BlueprintCallable)
+	void Interact();
+	UFUNCTION(BlueprintCallable)
+	void ToggleGamePause();
 protected:
 	void UpdateWeaponInfoUI();
 
+	void UpdateLineTracedActor();
 	void UpdateMessage(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -68,6 +65,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
 	class UInventory* Inventory;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
+	class AActor* LineTracedActor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
+	class UInteractionComponent* LineTracedInteractionComponent;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UInteractionInfoUI> InteractionInfoUIClass;
+	UPROPERTY()
+	class UInteractionInfoUI* InteractionInfoUI;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	FWeaponInstance Weapon1;
@@ -98,7 +105,6 @@ protected:
 
 	bool bIsGamePauseScreenOn = false;
 
-//public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	float MessageMaxTime = 5.0f;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
@@ -107,6 +113,4 @@ protected:
 	float MessageAppearTime = 1.0f;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
 	float MessageDisappearTime = 1.0f;
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-	//FString Message;
 };
