@@ -10,3 +10,4 @@ So far I added:
 - health bar above enemies
 - simple UI for current weapon (ammo)
 - pause menu (on ESC or P)
+- simple puzzle with dial switch
