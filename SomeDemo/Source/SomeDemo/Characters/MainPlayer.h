@@ -14,36 +14,46 @@ class SOMEDEMO_API AMainPlayer : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AMainPlayer();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
 	void AddWeapon(FWeaponInstance Weapon);
 	
-	void ToggleGamePause();
 
-protected:
+	UFUNCTION(BlueprintCallable)
+	bool ShowMessage(FText Message);
+
+	UFUNCTION(BlueprintCallable)
 	void MoveForward(float Value);
+	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Value);
+	UFUNCTION(BlueprintCallable)
 	void Turn(float Value);
+	UFUNCTION(BlueprintCallable)
 	void LookUp(float Value);
 
+	UFUNCTION(BlueprintCallable)
 	void Fire();
+	UFUNCTION(BlueprintCallable)
 	void Reload();
-
+	UFUNCTION(BlueprintCallable)
 	void SetItem1();
 
+	UFUNCTION(BlueprintCallable)
+	void Interact();
+	UFUNCTION(BlueprintCallable)
+	void ToggleGamePause();
+protected:
+	void UpdateWeaponInfoUI();
+
+	void UpdateLineTracedActor();
+	void UpdateMessage(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* FirstPersonCamera;
@@ -57,10 +67,21 @@ protected:
 	class UInventory* Inventory;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
-	bool bUsesWeapon = false;
+	class AActor* LineTracedActor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
+	class UInteractionComponent* LineTracedInteractionComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-	TArray<FWeaponInstance> Weapons;
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UInteractionInfoUI> InteractionInfoUIClass;
+	UPROPERTY()
+	class UInteractionInfoUI* InteractionInfoUI;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	FWeaponInstance Weapon1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	FWeaponInstance Weapon2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	FWeaponInstance Weapon3;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons")
 	class AWeapon* EquippedWeaponActor;
@@ -83,4 +104,13 @@ protected:
 	class UGamePauseUI* GamePauseUI;
 
 	bool bIsGamePauseScreenOn = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	float MessageMaxTime = 5.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	float MessageCurrentTime = 0.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	float MessageAppearTime = 1.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	float MessageDisappearTime = 1.0f;
 };
