@@ -41,9 +41,9 @@ void AEnemy::Tick(float DeltaTime)
 
 }
 
-void AEnemy::DoDamage_Implementation(float Value)
+void AEnemy::DoDamage_Implementation(AActor* DamagingActor, float DamageValue)
 {
-	Health -= Value;
+	Health -= DamageValue;
 
 	if (Health <= 0.0f)
 	{
@@ -52,6 +52,8 @@ void AEnemy::DoDamage_Implementation(float Value)
 	}
 
 	UpdateHealthBar();
+
+	OnDamageTake.Broadcast(DamagingActor, DamageValue);
 }
 
 void AEnemy::UpdateHealthBar()

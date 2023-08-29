@@ -7,6 +7,8 @@
 #include "../Damageable.h"
 #include "Enemy.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDamageTake, class AActor*, DamagingActor, float, DamageValue);
+
 UCLASS()
 class SOMEDEMO_API AEnemy : public ACharacter, public IDamageable
 {
@@ -21,7 +23,10 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-	void DoDamage_Implementation(float Value) override;
+	void DoDamage_Implementation(class AActor* DamagingActor, float DamageValue) override;
+
+	UPROPERTY(BlueprintAssignable)
+	FDamageTake OnDamageTake;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateHealthBar();
