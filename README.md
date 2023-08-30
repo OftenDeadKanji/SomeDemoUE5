@@ -11,3 +11,4 @@ So far I added:
 - simple UI for current weapon (ammo)
 - pause menu (on ESC or P)
 - simple puzzle with dial switch
+- enemies that patrol and chase player when they see him or when they are attacked by him

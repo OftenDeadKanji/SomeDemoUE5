@@ -5,6 +5,10 @@
 #include "Components/WidgetComponent.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/ProgressBar.h"
+#include "Components/CapsuleComponent.h"
+#include "MainPlayer.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -14,6 +18,9 @@ AEnemy::AEnemy()
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("Health Bar"));
 	HealthBar->SetupAttachment(RootComponent);
+
+	CatchingPlayerArea = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CatchingPlayerArea"));
+	CatchingPlayerArea->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -21,6 +28,9 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	CatchingPlayerArea->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnCatchingPlayerAreaOverlapBegin);
+	CatchingPlayerArea->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnCatchingPlayerAreaOverlapEnd);
+
 	UpdateHealthBar();
 }
 
@@ -31,16 +41,9 @@ void AEnemy::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AEnemy::DoDamage_Implementation(AActor* DamagingActor, float DamageValue)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
-void AEnemy::DoDamage_Implementation(float Value)
-{
-	Health -= Value;
+	Health -= DamageValue;
 
 	if (Health <= 0.0f)
 	{
@@ -49,6 +52,8 @@ void AEnemy::DoDamage_Implementation(float Value)
 	}
 
 	UpdateHealthBar();
+
+	OnDamageTake.Broadcast(DamagingActor, DamageValue);
 }
 
 void AEnemy::UpdateHealthBar()
@@ -59,4 +64,18 @@ void AEnemy::UpdateHealthBar()
 		progressBar->SetPercent(Health / MaxHealth);
 	}
 }
+
+void AEnemy::OnCatchingPlayerAreaOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (auto* Player = Cast<AMainPlayer>(OtherActor))
+	{
+		auto* World = GetWorld();
+		auto* PC = UGameplayStatics::GetPlayerController(World, 0);
+
+		UKismetSystemLibrary::QuitGame(World, PC, EQuitPreference::Quit, false);
+	}
+}
+
+void AEnemy::OnCatchingPlayerAreaOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{}
 

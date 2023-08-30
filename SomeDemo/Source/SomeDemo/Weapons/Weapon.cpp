@@ -45,7 +45,7 @@ bool AWeapon::Fire(int32& ClipAmmo, int32& Ammo)
 			auto* hitActor = hit.GetActor();
 			if (IDamageable* damageable = Cast<IDamageable>(hitActor))
 			{
-				damageable->Execute_DoDamage(hitActor, BaseDamage);
+				damageable->Execute_DoDamage(hitActor, OwnerActor, BaseDamage);
 			}
 		}
 

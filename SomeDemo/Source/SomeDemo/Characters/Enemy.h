@@ -7,39 +7,45 @@
 #include "../Damageable.h"
 #include "Enemy.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDamageTake, class AActor*, DamagingActor, float, DamageValue);
+
 UCLASS()
 class SOMEDEMO_API AEnemy : public ACharacter, public IDamageable
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AEnemy();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
+public:
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void DoDamage_Implementation(class AActor* DamagingActor, float DamageValue) override;
 
-	void DoDamage_Implementation(float Value) override;
+	UPROPERTY(BlueprintAssignable)
+	FDamageTake OnDamageTake;
 
 	UFUNCTION(BlueprintCallable)
-		void UpdateHealthBar();
+	void UpdateHealthBar();
 protected:
+	UFUNCTION()
+	void OnCatchingPlayerAreaOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnCatchingPlayerAreaOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Health = 100.0f;
+	float Health = 100.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxHealth = 100.0f;
+	float MaxHealth = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-		class UWidgetComponent* HealthBar;
+	class UWidgetComponent* HealthBar;
 	UPROPERTY(EditAnywhere, Category = "UI")
-		FName ProgressBarWidgetName;
+	FName ProgressBarWidgetName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+	class UCapsuleComponent* CatchingPlayerArea;
 };
