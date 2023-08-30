@@ -77,7 +77,7 @@ void AMainPlayer::Tick(float DeltaTime)
 
 void AMainPlayer::AddWeapon(FWeaponInstance Weapon)
 {
-	if (Weapon.WeaponClass != Weapon1.WeaponClass && Weapon.WeaponClass != Weapon2.WeaponClass && Weapon.WeaponClass != Weapon3.WeaponClass)
+	if (Weapon.WeaponClass != Weapon1.WeaponClass && Weapon.WeaponClass != Weapon2.WeaponClass && Weapon.WeaponClass != Weapon3.WeaponClass) // trying to add weapon that player can't have
 	{
 		return;
 	}
@@ -241,8 +241,9 @@ void AMainPlayer::UpdateLineTracedActor()
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
+	const float TRACE_DISTANCE = 1000.0f;
 	FVector Start = FirstPersonCamera->GetComponentLocation();
-	FVector End = Start + FirstPersonCamera->GetForwardVector() * 1000.0f;
+	FVector End = Start + FirstPersonCamera->GetForwardVector() * TRACE_DISTANCE;
 
 	if (World->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_Camera, CollisionParams))
 	{

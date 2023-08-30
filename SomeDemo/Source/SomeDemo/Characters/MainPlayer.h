@@ -29,6 +29,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool ShowMessage(FText Message);
 
+#pragma region Inputs
 	UFUNCTION(BlueprintCallable)
 	void MoveForward(float Value);
 	UFUNCTION(BlueprintCallable)
@@ -49,6 +50,8 @@ public:
 	void Interact();
 	UFUNCTION(BlueprintCallable)
 	void ToggleGamePause();
+
+#pragma endregion
 protected:
 	void UpdateWeaponInfoUI();
 
@@ -71,11 +74,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
 	class UInteractionComponent* LineTracedInteractionComponent;
 
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<class UInteractionInfoUI> InteractionInfoUIClass;
-	UPROPERTY()
-	class UInteractionInfoUI* InteractionInfoUI;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	FWeaponInstance Weapon1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
@@ -92,6 +90,11 @@ protected:
 	class USceneComponent* WeaponLocation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	class USceneComponent* WeaponShotStartLocation;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UInteractionInfoUI> InteractionInfoUIClass;
+	UPROPERTY()
+	class UInteractionInfoUI* InteractionInfoUI;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<class UMainPlayerHUD> PlayerHUDClass;
