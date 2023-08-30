@@ -70,9 +70,9 @@ void AEnemy::OnCatchingPlayerAreaOverlapBegin(UPrimitiveComponent* OverlappedCom
 	if (auto* Player = Cast<AMainPlayer>(OtherActor))
 	{
 		auto* World = GetWorld();
-		auto* PC = UGameplayStatics::GetPlayerController(World, 0);
-
-		UKismetSystemLibrary::QuitGame(World, PC, EQuitPreference::Quit, false);
+		//auto* PC = UGameplayStatics::GetPlayerController(World, 0);
+		UGameplayStatics::OpenLevel(World, TEXT("MainMenu"));
+		//UKismetSystemLibrary::QuitGame(World, PC, EQuitPreference::Quit, false);
 	}
 }
 
