@@ -17,10 +17,8 @@
 #include "../../UI/InteractionInfoUI.h"
 #include "../../UI/HUD_Level1HUD.h"
 
-// Sets default values
 AMainPlayer::AMainPlayer()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
@@ -35,7 +33,6 @@ AMainPlayer::AMainPlayer()
 	WeaponShotStartLocation->SetupAttachment(FirstPersonCamera);
 }
 
-// Called when the game starts or when spawned
 void AMainPlayer::BeginPlay()
 {
 	Super::BeginPlay();
@@ -44,30 +41,14 @@ void AMainPlayer::BeginPlay()
 	HUD = PC->GetHUD<AHUD_Level1HUD>();
 	check(HUD);
 
-	//PlayerHUD->AddToPlayerScreen();
-
-	HUD->CreateMainPlayerHUD();
 	UpdateWeaponInfoUI();
-	//HUD->PlayerHUD->Message->SetRenderOpacity(0.0f);
-	//MessageCurrentTime = MessageMaxTime;
-
-	//GamePauseUI = CreateWidget<UGamePauseUI>(PC, GamePauseUIClass, FName(TEXT("GamePauseUI")));
-
-	//InteractionInfoUI = CreateWidget<UInteractionInfoUI>(PC, InteractionInfoUIClass, FName(TEXT("InteractionInfoUI")));
-	//InteractionInfoUI->AddToPlayerScreen();
-
-	//HUD->InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Hidden);
-	//HUD->InteractionInfoUI->PlayerInteractActionInfo->SetVisibility(ESlateVisibility::Hidden);
 }
 
-// Called every frame
 void AMainPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	UpdateLineTracedActor();
-
-	UpdateMessage(DeltaTime);
 }
 
 void AMainPlayer::AddWeapon(FWeaponInstance Weapon)
@@ -147,7 +128,6 @@ void AMainPlayer::Fire()
 		if (fired)
 		{
 			HUD->UpdateWeaponAmmunitionInfo(Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
-			//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
 		}
 	}
 }
@@ -159,7 +139,6 @@ void AMainPlayer::Reload()
 		FWeaponInstance& Instance = EquippedWeaponInstanceIndex == 0 ? Weapon1 : EquippedWeaponInstanceIndex == 1 ? Weapon2 : Weapon3;
 
 		EquippedWeaponActor->Reload(Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
-		//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
 		HUD->UpdateWeaponAmmunitionInfo(Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
 	}
 }
@@ -197,8 +176,6 @@ void AMainPlayer::SetItem1()
 				EquippedWeaponInstanceIndex = 0;
 
 				HUD->ShowWeaponInfo(EquippedWeaponActor->GetWeaponName(), Weapon1.CurrentClipAmmo, Weapon1.CurrentRemainingAmmo);
-				//HUD->PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
-				//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapon1.CurrentClipAmmo, Weapon1.CurrentRemainingAmmo)));
 			}
 		}
 	}
@@ -210,8 +187,6 @@ void AMainPlayer::SetItem1()
 		EquippedWeaponInstanceIndex = -1;
 
 		HUD->HideWeaponInfo();
-		//HUD->PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
-		//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
 	}
 
 }
@@ -221,16 +196,11 @@ void AMainPlayer::UpdateWeaponInfoUI()
 	if (EquippedWeaponActor == nullptr)
 	{
 		HUD->HideWeaponInfo();
-		//HUD->PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
-		//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
 	}
 	else
 	{
-		//HUD->PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
-
 		FWeaponInstance& Instance = EquippedWeaponInstanceIndex == 0 ? Weapon1 : EquippedWeaponInstanceIndex == 1 ? Weapon2 : Weapon3;
 		HUD->ShowWeaponInfo(EquippedWeaponActor->GetWeaponName(), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
-		//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
 	}
 }
 
@@ -263,38 +233,11 @@ void AMainPlayer::UpdateLineTracedActor()
 		if(ShowInteractionInfo)
 		{
 			HUD->ShowInteractionInfo(LineTracedInteractionComponent->ObjectDescriptionToDisplay, LineTracedInteractionComponent->InteractActionToDisplay);
-			//HUD->InteractionInfoUI->InteractiveObjectInfo->SetText(LineTracedInteractionComponent->ObjectDescriptionToDisplay);
-			//
-			//HUD->InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Visible);
-			//HUD->InteractionInfoUI->PlayerInteractActionInfo->SetVisibility(ESlateVisibility::Visible);
 		}
 		else
 		{
 			HUD->HideInteractionInfo();
-			//HUD->InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Hidden);
-			//HUD->InteractionInfoUI->PlayerInteractActionInfo->SetVisibility(ESlateVisibility::Hidden);
 		}
-	}
-}
-
-void AMainPlayer::UpdateMessage(float DelatTime)
-{
-	if (MessageCurrentTime < MessageMaxTime)
-	{
-		float Opacity = 1.0f;
-		if (MessageCurrentTime < MessageAppearTime)
-		{
-			Opacity = FMath::Lerp(0.0f, 1.0f, MessageCurrentTime / MessageAppearTime);
-		}
-		else if (MessageCurrentTime > MessageMaxTime - MessageDisappearTime)
-		{
-			Opacity = FMath::Lerp(1.0f, 0.0f, (MessageCurrentTime - (MessageMaxTime - MessageDisappearTime)) / MessageDisappearTime);
-		}
-		
-		//HUD->ShowMessage()
-		//HUD->PlayerHUD->Message->SetRenderOpacity(Opacity);
-
-		MessageCurrentTime += DelatTime;
 	}
 }
 
@@ -313,7 +256,6 @@ void AMainPlayer::ToggleGamePause()
 
 	if(bIsGamePauseScreenOn)
 	{
-		//GamePauseUI->RemoveFromViewport();
 		HUD->HidePauseScreen();
 		bIsGamePauseScreenOn = false;
 	
@@ -325,7 +267,6 @@ void AMainPlayer::ToggleGamePause()
 	else
 	{
 		HUD->ShowPauseScreen();
-		//GamePauseUI->AddToViewport();
 		bIsGamePauseScreenOn = true;
 	
 		UGameplayStatics::SetGamePaused(World, true);
@@ -338,15 +279,5 @@ void AMainPlayer::ToggleGamePause()
 bool AMainPlayer::ShowMessage(FText Message)
 {
 	return HUD->ShowMessage(Message, MessageMaxTime - MessageAppearTime - MessageDisappearTime, MessageAppearTime, MessageDisappearTime);
-
-	//if (MessageCurrentTime >= MessageMaxTime)
-	//{
-	//	//HUD->PlayerHUD->Message->SetText(Message);
-	//	MessageCurrentTime = 0.0f;
-	//
-	//	return true;
-	//}
-	//
-	//return false;
 }
 

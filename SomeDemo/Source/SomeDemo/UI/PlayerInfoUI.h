@@ -14,4 +14,9 @@ class SOMEDEMO_API UPlayerInfoUI : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	class UImage* Crosshair;
 };

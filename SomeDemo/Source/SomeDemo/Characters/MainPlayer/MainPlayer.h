@@ -25,7 +25,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddWeapon(FWeaponInstance Weapon);
 	
-
 	UFUNCTION(BlueprintCallable)
 	bool ShowMessage(FText Message);
 
@@ -56,7 +55,6 @@ protected:
 	void UpdateWeaponInfoUI();
 
 	void UpdateLineTracedActor();
-	void UpdateMessage(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* FirstPersonCamera;

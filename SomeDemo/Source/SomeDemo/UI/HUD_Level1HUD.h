@@ -26,9 +26,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HideInteractionInfo();
 
-	//UFUNCTION(BlueprintCallable)
-	void CreateMainPlayerHUD();
-
 	UFUNCTION(BlueprintCallable)
 	bool ShowMessage(const FText& Message, float MainTime = 3.0f, float AppearTime = 1.0f, float DisappearTime = 1.0f);
 
@@ -45,18 +42,33 @@ public:
 	void HidePauseScreen();
 
 protected:
+	class AMainPlayerController* OwningPlayerController;
+
+	UPROPERTY(EditAnywhere, Category = "Player")
+	TSubclassOf<class UPlayerInfoUI> PlayerInfoUIClass;
+	UPROPERTY()
+	class UPlayerInfoUI* PlayerInfoUI;
+
 	UPROPERTY(EditAnywhere, Category = "Player")
 	TSubclassOf<class UInteractionInfoUI> InteractionInfoUIClass;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	class UInteractionInfoUI* InteractionInfoUI;
 	
 	UPROPERTY(EditAnywhere, Category = "Player")
-	TSubclassOf<class UMainPlayerHUD> PlayerHUDClass;
-	UPROPERTY(VisibleAnywhere)
-	class UMainPlayerHUD* PlayerHUD;
+	TSubclassOf<class UWeaponInfoUI> WeaponInfoUIClass;
+	UPROPERTY()
+	class UWeaponInfoUI* WeaponInfoUI;
+
+	UPROPERTY(EditAnywhere, Category = "Player")
+	TSubclassOf<class UMessageUI> MessageUIClass;
+	UPROPERTY()
+	class UMessageUI* MessageUI;
 	
+	UFUNCTION()
+	void OnMessageCompleted();
+
 	UPROPERTY(EditAnywhere, Category = "Pause Screen")
 	TSubclassOf<class UGamePauseUI> GamePauseUIClass;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	class UGamePauseUI* GamePauseUI;
 };
