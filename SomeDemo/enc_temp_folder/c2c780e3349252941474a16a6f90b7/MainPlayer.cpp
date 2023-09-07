@@ -4,17 +4,18 @@
 #include "MainPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../Inventory/Inventory.h"
+#include "../../Inventory/Inventory.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetComponent.h"
 #include "Blueprint/WidgetTree.h"
-#include "../MainPlayerHUD.h"
+#include "../../UI/MainPlayerHUD.h"
 #include "Kismet/GameplayStatics.h"
-#include "../GamePauseUI.h"
+#include "../../UI/GamePauseUI.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "../InteractionComponent.h"
-#include "../InteractionInfoUI.h"
+#include "../../Interaction/InteractionComponent.h"
+#include "../../UI/InteractionInfoUI.h"
+#include "../../UI/HUD_Level1HUD.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -32,15 +33,6 @@ AMainPlayer::AMainPlayer()
 
 	WeaponShotStartLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Shot Start Location"));
 	WeaponShotStartLocation->SetupAttachment(FirstPersonCamera);
-
-	PlayerHUD = nullptr;
-	PlayerHUDClass = nullptr;
-
-	GamePauseUI = nullptr;
-	GamePauseUIClass = nullptr;
-
-	InteractionInfoUI = nullptr;
-	InteractionInfoUIClass = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -49,20 +41,23 @@ void AMainPlayer::BeginPlay()
 	Super::BeginPlay();
 	auto* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
-	PlayerHUD = CreateWidget<UMainPlayerHUD>(PC, PlayerHUDClass);
-	PlayerHUD->AddToPlayerScreen();
+	HUD = PC->GetHUD<AHUD_Level1HUD>();
+	check(HUD);
 
+	//PlayerHUD->AddToPlayerScreen();
+
+	HUD->CreateMainPlayerHUD();
 	UpdateWeaponInfoUI();
-	PlayerHUD->Message->SetRenderOpacity(0.0f);
-	MessageCurrentTime = MessageMaxTime;
+	//HUD->PlayerHUD->Message->SetRenderOpacity(0.0f);
+	//MessageCurrentTime = MessageMaxTime;
 
-	GamePauseUI = CreateWidget<UGamePauseUI>(PC, GamePauseUIClass, FName(TEXT("GamePauseUI")));
+	//GamePauseUI = CreateWidget<UGamePauseUI>(PC, GamePauseUIClass, FName(TEXT("GamePauseUI")));
 
-	InteractionInfoUI = CreateWidget<UInteractionInfoUI>(PC, InteractionInfoUIClass, FName(TEXT("InteractionInfoUI")));
-	InteractionInfoUI->AddToPlayerScreen();
+	//InteractionInfoUI = CreateWidget<UInteractionInfoUI>(PC, InteractionInfoUIClass, FName(TEXT("InteractionInfoUI")));
+	//InteractionInfoUI->AddToPlayerScreen();
 
-	InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Hidden);
-	InteractionInfoUI->PlayerInteractionInfo->SetVisibility(ESlateVisibility::Hidden);
+	//HUD->InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Hidden);
+	//HUD->InteractionInfoUI->PlayerInteractActionInfo->SetVisibility(ESlateVisibility::Hidden);
 }
 
 // Called every frame
@@ -151,7 +146,8 @@ void AMainPlayer::Fire()
 		bool fired = EquippedWeaponActor->Fire(Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
 		if (fired)
 		{
-			PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
+			HUD->UpdateWeaponAmmunitionInfo(Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
+			//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
 		}
 	}
 }
@@ -163,7 +159,8 @@ void AMainPlayer::Reload()
 		FWeaponInstance& Instance = EquippedWeaponInstanceIndex == 0 ? Weapon1 : EquippedWeaponInstanceIndex == 1 ? Weapon2 : Weapon3;
 
 		EquippedWeaponActor->Reload(Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
-		PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
+		//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
+		HUD->UpdateWeaponAmmunitionInfo(Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
 	}
 }
 
@@ -199,8 +196,9 @@ void AMainPlayer::SetItem1()
 
 				EquippedWeaponInstanceIndex = 0;
 
-				PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
-				PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapon1.CurrentClipAmmo, Weapon1.CurrentRemainingAmmo)));
+				HUD->ShowWeaponInfo(EquippedWeaponActor->GetWeaponName(), Weapon1.CurrentClipAmmo, Weapon1.CurrentRemainingAmmo);
+				//HUD->PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
+				//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Weapon1.CurrentClipAmmo, Weapon1.CurrentRemainingAmmo)));
 			}
 		}
 	}
@@ -211,8 +209,9 @@ void AMainPlayer::SetItem1()
 
 		EquippedWeaponInstanceIndex = -1;
 
-		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
-		PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
+		HUD->HideWeaponInfo();
+		//HUD->PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
+		//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
 	}
 
 }
@@ -221,15 +220,17 @@ void AMainPlayer::UpdateWeaponInfoUI()
 {
 	if (EquippedWeaponActor == nullptr)
 	{
-		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
-		PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
+		HUD->HideWeaponInfo();
+		//HUD->PlayerHUD->PlayerWeaponName->SetText(FText::FromString(TEXT("")));
+		//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(TEXT("")));
 	}
 	else
 	{
-		PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
+		//HUD->PlayerHUD->PlayerWeaponName->SetText(FText::FromString(EquippedWeaponActor->GetWeaponName()));
 
 		FWeaponInstance& Instance = EquippedWeaponInstanceIndex == 0 ? Weapon1 : EquippedWeaponInstanceIndex == 1 ? Weapon2 : Weapon3;
-		PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
+		HUD->ShowWeaponInfo(EquippedWeaponActor->GetWeaponName(), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo);
+		//HUD->PlayerHUD->PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"), Instance.CurrentClipAmmo, Instance.CurrentRemainingAmmo)));
 	}
 }
 
@@ -261,15 +262,17 @@ void AMainPlayer::UpdateLineTracedActor()
 
 		if(ShowInteractionInfo)
 		{
-			InteractionInfoUI->InteractiveObjectInfo->SetText(LineTracedInteractionComponent->ObjectDescriptionToDisplay);
-			
-			InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Visible);
-			InteractionInfoUI->PlayerInteractionInfo->SetVisibility(ESlateVisibility::Visible);
+			HUD->ShowInteractionInfo(LineTracedInteractionComponent->ObjectDescriptionToDisplay, LineTracedInteractionComponent->InteractActionToDisplay);
+			//HUD->InteractionInfoUI->InteractiveObjectInfo->SetText(LineTracedInteractionComponent->ObjectDescriptionToDisplay);
+			//
+			//HUD->InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Visible);
+			//HUD->InteractionInfoUI->PlayerInteractActionInfo->SetVisibility(ESlateVisibility::Visible);
 		}
 		else
 		{
-			InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Hidden);
-			InteractionInfoUI->PlayerInteractionInfo->SetVisibility(ESlateVisibility::Hidden);
+			HUD->HideInteractionInfo();
+			//HUD->InteractionInfoUI->InteractiveObjectInfo->SetVisibility(ESlateVisibility::Hidden);
+			//HUD->InteractionInfoUI->PlayerInteractActionInfo->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
@@ -288,7 +291,8 @@ void AMainPlayer::UpdateMessage(float DelatTime)
 			Opacity = FMath::Lerp(1.0f, 0.0f, (MessageCurrentTime - (MessageMaxTime - MessageDisappearTime)) / MessageDisappearTime);
 		}
 		
-		PlayerHUD->Message->SetRenderOpacity(Opacity);
+		//HUD->ShowMessage()
+		//HUD->PlayerHUD->Message->SetRenderOpacity(Opacity);
 
 		MessageCurrentTime += DelatTime;
 	}
@@ -309,36 +313,40 @@ void AMainPlayer::ToggleGamePause()
 
 	if(bIsGamePauseScreenOn)
 	{
-		GamePauseUI->RemoveFromViewport();
+		//GamePauseUI->RemoveFromViewport();
+		HUD->HidePauseScreen();
 		bIsGamePauseScreenOn = false;
-
+	
 		UGameplayStatics::SetGamePaused(World, false);
 		PC->bShowMouseCursor = false;
-
+	
 		UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
 	}
 	else
 	{
-		GamePauseUI->AddToViewport();
+		HUD->ShowPauseScreen();
+		//GamePauseUI->AddToViewport();
 		bIsGamePauseScreenOn = true;
-
+	
 		UGameplayStatics::SetGamePaused(World, true);
 		PC->bShowMouseCursor = true;
-
+	
 		UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(PC);
 	}
 }
 
 bool AMainPlayer::ShowMessage(FText Message)
 {
-	if (MessageCurrentTime >= MessageMaxTime)
-	{
-		this->PlayerHUD->Message->SetText(Message);
-		MessageCurrentTime = 0.0f;
+	return HUD->ShowMessage(MessageMaxTime - MessageAppearTime - MessageDisappearTime, MessageAppearTime, MessageDisappearTime);
 
-		return true;
-	}
-
-	return false;
+	//if (MessageCurrentTime >= MessageMaxTime)
+	//{
+	//	//HUD->PlayerHUD->Message->SetText(Message);
+	//	MessageCurrentTime = 0.0f;
+	//
+	//	return true;
+	//}
+	//
+	//return false;
 }
 

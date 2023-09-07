@@ -15,8 +15,11 @@ class SOMEDEMO_API UInteractionInfoUI : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable)
+	void SetInteractionInfo(const FText& InteractiveObjectInfo, const FText& PlayerInteractActionInfo);
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	class UTextBlock* InteractiveObjectInfo;
+	class UTextBlock* InteractiveObjectInfoText;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	class UTextBlock* PlayerInteractionInfo;
+	class UTextBlock* PlayerInteractActionInfoText;
 };

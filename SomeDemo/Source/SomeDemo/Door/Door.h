@@ -24,52 +24,52 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-		void StartOpening();
+	void StartOpening();
 
 	UFUNCTION(BlueprintCallable)
-		void StartClosing();
+	void StartClosing();
 
 	UFUNCTION(BlueprintCallable)
-		void ChangeState();
+	void ChangeState();
 
 	UFUNCTION(BlueprintCallable)
-		bool IsOpening() const;
+	bool IsOpening() const;
 	UFUNCTION(BlueprintCallable)
-		bool IsOpen() const;
+	bool IsOpen() const;
 	UFUNCTION(BlueprintCallable)
-		bool IsClosed() const;
+	bool IsClosed() const;
 
 	DECLARE_EVENT(ADoor, FDoorOpen)
-		FDoorOpen OnDoorOpen;
+	FDoorOpen OnDoorOpen;
 	DECLARE_EVENT(ADoor, FDoorStartOpening)
-		FDoorStartOpening OnDoorStartOpening;
+	FDoorStartOpening OnDoorStartOpening;
 	DECLARE_EVENT(ADoor, FDoorClose)
-		FDoorClose OnDoorClose;
+	FDoorClose OnDoorClose;
 	DECLARE_EVENT(ADoor, FDoorStartClosing)
-		FDoorStartClosing OnDoorStartClosing;
+	FDoorStartClosing OnDoorStartClosing;
 protected:
 	UPROPERTY()
-		class USceneComponent* Root;
+	class USceneComponent* Root;
 
 	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* Mesh;
+	class UStaticMeshComponent* Mesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
-		bool bIsOpening;
+	bool bIsOpening;
 
 	UPROPERTY(EditAnywhere, Category = "Gameplay")
-		float Speed = 1.0f;
+	float Speed = 1.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Gameplay")
-		float OpenClosedFactor = 0.0f; // 0 - fully closed, 1 - fully open
+	float OpenClosedFactor = 0.0f; // 0 - fully closed, 1 - fully open
 
 	UPROPERTY(EditAnywhere)
-		FTransform RelativeTransformWhenClosed;
-	
-	UPROPERTY(EditAnywhere)
-		FTransform RelativeTransformWhenOpen;
+	FTransform RelativeTransformWhenClosed;
 
 	UPROPERTY(EditAnywhere)
-		bool bEnabled = true;
+	FTransform RelativeTransformWhenOpen;
+
+	UPROPERTY(EditAnywhere)
+	bool bEnabled = true;
 
 };

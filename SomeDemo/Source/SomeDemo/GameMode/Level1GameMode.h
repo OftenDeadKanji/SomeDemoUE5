@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "Characters/MainPlayer.h"
-#include "Level1_HUD.h"
+#include "../Characters/MainPlayer/MainPlayer.h"
+#include "../UI/HUD_Level1HUD.h"
 #include "Level1GameMode.generated.h"
 
 /**
@@ -19,11 +19,10 @@ class SOMEDEMO_API ALevel1GameMode : public AGameModeBase
 public:
 	ALevel1GameMode();
 
-	//virtual void InitGameState() override;
+	void InitGameState() override;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AMainPlayer> DefaultPawn;// = AMainPlayer::StaticClass();
 
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<AMainPlayer> DefaultPawn = AMainPlayer::StaticClass();
-
-	//UPROPERTY(EditAnywhere)
-	//	TSubclassOf<ALevel1_HUD> HUD = ALevel1_HUD::StaticClass();
+	TSubclassOf<AHUD_Level1HUD> HUD;// = AHUD_Level1HUD::StaticClass();
 };

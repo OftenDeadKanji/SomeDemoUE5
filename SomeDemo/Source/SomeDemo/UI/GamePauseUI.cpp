@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Characters/MainPlayer.h"
+#include "../Characters/MainPlayer/MainPlayer.h"
 
 void UGamePauseUI::NativeConstruct()
 {

@@ -6,7 +6,7 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/ProgressBar.h"
 #include "Components/CapsuleComponent.h"
-#include "MainPlayer.h"
+#include "../MainPlayer/MainPlayer.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 

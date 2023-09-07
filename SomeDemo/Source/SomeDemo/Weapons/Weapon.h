@@ -34,7 +34,7 @@ public:
 
 	void SetOwnerActor(class AActor* Actor);
 
-	const FString& GetWeaponName() const;
+	const FText& GetWeaponName() const;
 
 	UStaticMesh* GetWeaponMesh();
 protected:
@@ -47,7 +47,7 @@ protected:
 	class AActor* OwnerActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
-	FString Name;
+	FText Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 	bool bIsHitscan;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")

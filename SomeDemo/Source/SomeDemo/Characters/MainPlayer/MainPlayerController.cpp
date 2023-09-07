@@ -2,7 +2,7 @@
 
 
 #include "MainPlayerController.h"
-#include "Characters/MainPlayer.h"
+#include "MainPlayer.h"
 
 AMainPlayerController::AMainPlayerController()
 {

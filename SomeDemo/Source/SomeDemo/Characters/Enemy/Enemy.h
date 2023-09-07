@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "../Damageable.h"
+#include "../../Damageable/Damageable.h"
 #include "Enemy.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDamageTake, class AActor*, DamagingActor, float, DamageValue);

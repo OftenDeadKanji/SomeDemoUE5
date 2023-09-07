@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "../Weapons/Weapon.h"
-#include "../Weapons/WeaponInstance.h"
+#include "../../Weapons/Weapon.h"
+#include "../../Weapons/WeaponInstance.h"
 #include "MainPlayer.generated.h"
 
 UCLASS()
@@ -91,20 +91,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	class USceneComponent* WeaponShotStartLocation;
 
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<class UInteractionInfoUI> InteractionInfoUIClass;
-	UPROPERTY()
-	class UInteractionInfoUI* InteractionInfoUI;
-
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<class UMainPlayerHUD> PlayerHUDClass;
-	UPROPERTY()
-	class UMainPlayerHUD* PlayerHUD;
-
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<class UGamePauseUI> GamePauseUIClass;
-	UPROPERTY()
-	class UGamePauseUI* GamePauseUI;
+	class AHUD_Level1HUD* HUD = nullptr;
 
 	bool bIsGamePauseScreenOn = false;
 

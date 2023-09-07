@@ -3,7 +3,7 @@
 
 #include "WeaponPickup.h"
 #include "Components/SphereComponent.h"
-#include "../Characters/MainPlayer.h"
+#include "../Characters/MainPlayer/MainPlayer.h"
 
 // Sets default values
 AWeaponPickup::AWeaponPickup()

@@ -45,4 +45,6 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	FText ObjectDescriptionToDisplay;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	FText InteractActionToDisplay;
 };

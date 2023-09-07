@@ -4,7 +4,7 @@
 #include "Weapon.h"
 #include "Sound/SoundBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "../Damageable.h"
+#include "../Damageable/Damageable.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -79,7 +79,7 @@ void AWeapon::SetOwnerActor(AActor* Actor)
 	OwnerActor = Actor;
 }
 
-const FString& AWeapon::GetWeaponName() const
+const FText& AWeapon::GetWeaponName() const
 {
 	return Name;
 }

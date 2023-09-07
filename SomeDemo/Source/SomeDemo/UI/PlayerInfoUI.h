@@ -3,19 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/HUD.h"
-#include "Level1_HUD.generated.h"
+#include "Blueprint/UserWidget.h"
+#include "PlayerInfoUI.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SOMEDEMO_API ALevel1_HUD : public AHUD
+class SOMEDEMO_API UPlayerInfoUI : public UUserWidget
 {
 	GENERATED_BODY()
-
-public:
-
-private:
 	
 };
