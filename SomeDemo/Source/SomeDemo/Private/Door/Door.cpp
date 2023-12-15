@@ -56,18 +56,3 @@ bool ADoor::IsClosed() const
 {
 	return State == DoorState::Closed;
 }
-
-void ADoor::DoorClosed()
-{
-	State = DoorState::Closed;
-
-	OnDoorClose.Broadcast();
-}
-
-void ADoor::DoorOpened()
-{
-	State = DoorState::Open;
-
-	OnDoorOpen.Broadcast();
-}
-

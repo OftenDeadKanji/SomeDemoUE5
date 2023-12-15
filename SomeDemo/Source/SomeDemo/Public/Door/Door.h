@@ -16,6 +16,11 @@ enum class DoorState : uint8
 	Closing
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDoorOpen);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDoorStartOpening);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDoorClose);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDoorStartClosing);
+
 UCLASS()
 class SOMEDEMO_API ADoor : public AActor
 {
@@ -40,30 +45,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsClosed() const;
 
-	UFUNCTION(BlueprintCallable)
-	void DoorClosed();
-
-	UFUNCTION(BlueprintCallable)
-	void DoorOpened();
-
-
-	DECLARE_EVENT(ADoor, FDoorOpen)
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FDoorOpen OnDoorOpen;
-	DECLARE_EVENT(ADoor, FDoorStartOpening)
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FDoorStartOpening OnDoorStartOpening;
-	DECLARE_EVENT(ADoor, FDoorClose)
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FDoorClose OnDoorClose;
-	DECLARE_EVENT(ADoor, FDoorStartClosing)
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FDoorStartClosing OnDoorStartClosing;
 
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USkeletalMeshComponent* MeshComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Gameplay")
 	bool bEnabled = true;
 
-	UPROPERTY(EditAnywhere, Category = "Gameplay")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 	DoorState State = DoorState::Closed;
 
 };

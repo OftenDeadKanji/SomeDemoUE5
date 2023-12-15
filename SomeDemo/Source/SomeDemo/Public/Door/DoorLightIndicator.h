@@ -45,9 +45,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 		class ADoor* Door;
 
-
+	UFUNCTION()
 	void ChangeToColorWhenOpen();
+	UFUNCTION()
 	void ChangeToColorWhenClosed();
+	UFUNCTION()
 	void ChangeToColorWhenChangingState();
-
 };

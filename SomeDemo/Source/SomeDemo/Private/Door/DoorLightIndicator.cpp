@@ -28,11 +28,11 @@ void ADoorLightIndicator::BeginPlay()
 
 	if (Door)
 	{
-		Door->OnDoorOpen.AddUObject(this, &ADoorLightIndicator::ChangeToColorWhenOpen);
-		Door->OnDoorClose.AddUObject(this, &ADoorLightIndicator::ChangeToColorWhenClosed);
+		Door->OnDoorOpen.AddDynamic(this, &ADoorLightIndicator::ChangeToColorWhenOpen);
+		Door->OnDoorClose.AddDynamic(this, &ADoorLightIndicator::ChangeToColorWhenClosed);
 
-		Door->OnDoorStartOpening.AddUObject(this, &ADoorLightIndicator::ChangeToColorWhenChangingState);
-		Door->OnDoorStartClosing.AddUObject(this, &ADoorLightIndicator::ChangeToColorWhenChangingState);
+		Door->OnDoorStartOpening.AddDynamic(this, &ADoorLightIndicator::ChangeToColorWhenChangingState);
+		Door->OnDoorStartClosing.AddDynamic(this, &ADoorLightIndicator::ChangeToColorWhenChangingState);
 
 		//init state
 		if (Door->IsOpen())
