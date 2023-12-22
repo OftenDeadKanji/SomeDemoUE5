@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Door.generated.h"
 
+class UDoorInteractionComponent;
+class USkeletalMeshComponent;
+
 UENUM()
 enum class DoorState : uint8
 {
@@ -31,10 +34,11 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void InitInteractionComponent();
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ChangeState();
+	virtual void ChangeState();
 
 	UFUNCTION(BlueprintCallable)
 	bool IsOpening() const;
@@ -44,6 +48,11 @@ public:
 	bool IsOpen() const;
 	UFUNCTION(BlueprintCallable)
 	bool IsClosed() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsEnabled() const;
+	UFUNCTION(BlueprintCallable)
+	void SetIsEnabled(bool Enabled);
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FDoorOpen OnDoorOpen;
@@ -55,11 +64,14 @@ public:
 	FDoorStartClosing OnDoorStartClosing;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class USkeletalMeshComponent* MeshComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	USkeletalMeshComponent* MeshComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UDoorInteractionComponent* InteractionComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Gameplay")
-	bool bEnabled = true;
+	bool bIsEnabled = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
 	DoorState State = DoorState::Closed;

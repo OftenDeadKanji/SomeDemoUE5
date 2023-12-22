@@ -3,20 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Interaction/InteractionComponent.h"
-#include "DoorInteractionComponent.generated.h"
+#include "Door/DoorInteractionComponent.h"
+#include "LockedDoorInteractionComponent.generated.h"
 
-class ADoor;
-
+class ALockedDoor;
+class AMainPlayer;
 /**
  * 
  */
 UCLASS(Blueprintable, BlueprintType, meta = (BlueprintSpawnableComponent))
-class SOMEDEMO_API UDoorInteractionComponent : public UInteractionComponent
+class SOMEDEMO_API ULockedDoorInteractionComponent : public UDoorInteractionComponent
 {
 	GENERATED_BODY()
-	
-	friend ADoor;
 protected:
 	virtual void BeginPlay() override;
 
@@ -24,5 +22,8 @@ public:
 	virtual void InteractInternal_Implementation(class AActor* InteractingActor) override;
 
 protected:
-	ADoor* Door;
+	bool TryToUnlockDoor(const AMainPlayer* Player);
+	void ShowMissingKeyMessage();
+
+	ALockedDoor* OwnerLockedDoor;
 };

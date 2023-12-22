@@ -32,10 +32,10 @@ void AMainPlayer::BeginPlay()
 	Super::BeginPlay();
 	auto* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
-	HUD = PC->GetHUD<AHUD_Level1HUD>();
-	check(HUD);
+	//HUD = PC->GetHUD<AHUD_Level1HUD>();
+	//check(HUD);
 
-	UpdateWeaponInfoUI();
+	//UpdateWeaponInfoUI();
 }
 
 void AMainPlayer::Tick(float DeltaTime)
@@ -71,6 +71,16 @@ void AMainPlayer::AddWeapon(FWeaponInstance Weapon)
 	}
 
 	UpdateWeaponInfoUI();
+}
+
+UInventory* AMainPlayer::GetInventory()
+{
+	return Inventory;
+}
+
+const UInventory* AMainPlayer::GetInventory() const
+{
+	return Inventory;
 }
 
 void AMainPlayer::MoveForward(float Value)
@@ -226,11 +236,11 @@ void AMainPlayer::UpdateLineTracedActor()
 
 		if(ShowInteractionInfo)
 		{
-			HUD->ShowInteractionInfo(LineTracedInteractionComponent->ObjectDescriptionToDisplay, LineTracedInteractionComponent->InteractActionToDisplay);
+			//HUD->ShowInteractionInfo(LineTracedInteractionComponent->ObjectDescriptionToDisplay, LineTracedInteractionComponent->InteractActionToDisplay);
 		}
 		else
 		{
-			HUD->HideInteractionInfo();
+			//HUD->HideInteractionInfo();
 		}
 	}
 }

@@ -48,3 +48,8 @@ bool UInventory::Contains(UInventoryItem_Base* Item)
 	return Items.Contains(Item);
 }
 
+const TArray<class UInventoryItem_Base*>& UInventory::GetItems() const
+{
+	return Items;
+}
+

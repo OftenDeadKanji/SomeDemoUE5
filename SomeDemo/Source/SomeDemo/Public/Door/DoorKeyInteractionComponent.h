@@ -4,19 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Interaction/InteractionComponent.h"
-#include "DoorInteractionComponent.generated.h"
+#include "DoorKeyInteractionComponent.generated.h"
 
-class ADoor;
-
+class ADoorKey;
 /**
  * 
  */
 UCLASS(Blueprintable, BlueprintType, meta = (BlueprintSpawnableComponent))
-class SOMEDEMO_API UDoorInteractionComponent : public UInteractionComponent
+class SOMEDEMO_API UDoorKeyInteractionComponent : public UInteractionComponent
 {
 	GENERATED_BODY()
-	
-	friend ADoor;
 protected:
 	virtual void BeginPlay() override;
 
@@ -24,5 +21,5 @@ public:
 	virtual void InteractInternal_Implementation(class AActor* InteractingActor) override;
 
 protected:
-	ADoor* Door;
+	ADoorKey* OwnerDoorKey;
 };

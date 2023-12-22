@@ -34,45 +34,72 @@ void AMainPlayerController::SetPlayerPawn(AMainPlayer* PlayerPawnToControll)
 
 void AMainPlayerController::CallMoveForward(float Val)
 {
-	PlayerPawn->MoveForward(Val);
+	if (PlayerPawn)
+	{
+		PlayerPawn->MoveForward(Val);
+	}
 }
 
 void AMainPlayerController::CallMoveRight(float Val)
 {
-	PlayerPawn->MoveRight(Val);
+	if (PlayerPawn)
+	{
+		PlayerPawn->MoveRight(Val);
+	}
 }
 
 void AMainPlayerController::CallTurn(float Val)
 {
-	PlayerPawn->Turn(Val);
+	if (PlayerPawn)
+	{
+		PlayerPawn->Turn(Val);
+	}
 }
 
 void AMainPlayerController::CallLookUp(float Val)
 {
-	PlayerPawn->LookUp(Val);
+	if (PlayerPawn)
+	{
+		PlayerPawn->LookUp(Val);
+	}
 }
 
 void AMainPlayerController::CallFire()
 {
-	PlayerPawn->Fire();
+	if (PlayerPawn)
+	{
+		PlayerPawn->Fire();
+	}
 }
 
 void AMainPlayerController::CallReload()
 {
-	PlayerPawn->Reload();
+	if (PlayerPawn)
+	{
+		PlayerPawn->Reload();
+	}
 }
 
 void AMainPlayerController::CallSetItem1()
 {
-	PlayerPawn->SetItem1();
+	if (PlayerPawn)
+	{
+		PlayerPawn->SetItem1();
+	}
 }
 
 void AMainPlayerController::CallInteract()
 {
-	PlayerPawn->Interact();
+	if (PlayerPawn)
+	{
+		PlayerPawn->Interact();
+	}
 }
 
 void AMainPlayerController::CallToggleGamePause()
 {
-	PlayerPawn->ToggleGamePause();
+	if (PlayerPawn)
+	{
+		PlayerPawn->ToggleGamePause();
+	}
 }

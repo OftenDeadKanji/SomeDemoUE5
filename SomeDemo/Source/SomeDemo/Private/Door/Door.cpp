@@ -2,25 +2,35 @@
 
 
 #include "Door/Door.h"
+#include "Door/DoorInteractionComponent.h"
 
-// Sets default values
 ADoor::ADoor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
-	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
+
+	MeshComponent->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 }
 
 void ADoor::BeginPlay()
 {
-	Super::BeginPlay();
+	InitInteractionComponent();
+}
+
+void ADoor::InitInteractionComponent()
+{
+	InteractionComponent = NewObject<UDoorInteractionComponent>(this, TEXT("InteractionComponent"));
+	InteractionComponent->RegisterComponent();
+
+	InteractionComponent->ObjectDescriptionToDisplay = INVTEXT("Door");
+	InteractionComponent->InteractActionToDisplay = INVTEXT("open");
 }
 
 void ADoor::ChangeState()
 {
-	if (bEnabled)
+	if (bIsEnabled)
 	{
 		if (State == DoorState::Open)
 		{
@@ -55,4 +65,14 @@ bool ADoor::IsOpen() const
 bool ADoor::IsClosed() const
 {
 	return State == DoorState::Closed;
+}
+
+bool ADoor::IsEnabled() const
+{
+	return bIsEnabled;
+}
+
+void ADoor::SetIsEnabled(bool Enabled)
+{
+	bIsEnabled = Enabled;
 }

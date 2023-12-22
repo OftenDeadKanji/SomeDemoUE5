@@ -8,6 +8,10 @@
 #include "../../Weapons/WeaponInstance.h"
 #include "MainPlayer.generated.h"
 
+class UInventory;
+class UInteractionComponent;
+class AHUD_Level1HUD;
+
 UCLASS()
 class SOMEDEMO_API AMainPlayer : public ACharacter
 {
@@ -25,6 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddWeapon(FWeaponInstance Weapon);
 	
+	UInventory* GetInventory();
+	const UInventory* GetInventory() const;
+
 #pragma region Inputs
 	UFUNCTION(BlueprintCallable)
 	void MoveForward(float Value);
@@ -62,12 +69,12 @@ protected:
 	float LookUpLimitMax = 89.99f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
-	class UInventory* Inventory;
+	UInventory* Inventory;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
-	class AActor* LineTracedActor;
+	AActor* LineTracedActor;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gameplay")
-	class UInteractionComponent* LineTracedInteractionComponent;
+	UInteractionComponent* LineTracedInteractionComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	FWeaponInstance Weapon1;
@@ -82,11 +89,11 @@ protected:
 	int32 EquippedWeaponInstanceIndex = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	class USceneComponent* WeaponLocation;
+	USceneComponent* WeaponLocation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	class USceneComponent* WeaponShotStartLocation;
+	USceneComponent* WeaponShotStartLocation;
 
-	class AHUD_Level1HUD* HUD = nullptr;
+	AHUD_Level1HUD* HUD = nullptr;
 
 	bool bIsGamePauseScreenOn = false;
 };
